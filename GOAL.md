@@ -359,11 +359,6 @@ It is a **bounded reasoning system**.
 
 ---
 
-Great — continuing the **internal dev guide**.
-This section will lock down **architecture, data flow, and component boundaries**, still staying Python-first and implementation-oriented.
-
----
-
 # 5. System Architecture
 
 ## 5.1 High-Level Architecture
@@ -756,767 +751,327 @@ They depend on:
 * enterprise tolerance
 
 ---
-# Local-First Enterprise Knowledge Engine
 
-**(GraphRAG + Verification)**
-*Internal Development Guide*
+# 10. Prompt Design (Generator + Verifier)
 
----
+Prompting is treated as **system logic**, not text generation.
 
-## 0. Purpose of This Document
+All prompts must be:
 
-This document is a **developer reference** for building a **local-first, hallucination-resistant enterprise knowledge engine**.
-
-It is **not**:
-
-* marketing material
-* a product pitch
-* a vision statement
-
-It **is**:
-
-* a system design guide
-* a decision log
-* a benchmark reference
-* a build checklist
-
-Primary goals:
-
-* determinism
-* privacy
-* auditability
-* bounded intelligence
+* versioned
+* testable
+* regression-checked
 
 ---
 
-## 1. Problem Definition (Engineering View)
+## 10.1 Generator Prompt (Primary LLM)
 
-### 1.1 Core Problem
+### Design Goals
 
-Enterprises in regulated domains need AI systems that:
-
-* operate **entirely on-prem / local**
-* **do not hallucinate**
-* can **justify every claim**
-* can **refuse to answer safely**
-* are usable on **modest infrastructure**
-
-LLMs alone cannot satisfy these constraints.
+* Force grounding
+* Penalize speculation
+* Encourage explicit uncertainty
+* Produce machine-parseable structure
 
 ---
 
-### 1.2 Key Constraints
+### 10.1.1 Generator System Prompt (Conceptual)
 
-| Constraint         | Implication                             |
-| ------------------ | --------------------------------------- |
-| Data privacy       | No cloud APIs                           |
-| Legal liability    | Hallucinations unacceptable             |
-| Cost sensitivity   | No large GPU clusters                   |
-| Audit requirements | Every answer must be traceable          |
-| Latency tolerance  | Seconds are acceptable, minutes are not |
+Core constraints embedded in the system prompt:
 
----
+* You may only use the provided context.
+* Every factual statement must reference evidence IDs.
+* If evidence is missing, state uncertainty.
+* Do not infer beyond retrieved facts.
 
-### 1.3 Design Philosophy
-
-> **Trust the system, not the model**
-
-The LLM is treated as:
-
-* a probabilistic reasoning engine
-* **never** a source of truth
-
-Truth comes from:
-
-* structured knowledge (GraphDB)
-* retrieval boundaries
-* verification passes
+**The model is explicitly discouraged from “being helpful.”**
 
 ---
 
-## 2. Enterprise Success Metrics
+### 10.1.2 Generator Output Contract
 
-These metrics define whether the system is **usable in real enterprises**.
+The generator must return **structured output**, not free text.
 
-They are **not ML benchmarks**.
+Recommended format (JSON-first):
 
----
-
-### 2.1 Hallucination Metrics (Primary)
-
-#### 2.1.1 Claim-Level Hallucination Rate (CHR)
-
-**Definition:**
-Percentage of generated factual claims that are **not supported** by retrieved knowledge.
-
-```
-CHR = unsupported_claims / total_claims
+```json
+{
+  "answer": [
+    {
+      "statement": "...",
+      "evidence_ids": ["E12", "E19"]
+    }
+  ],
+  "uncertainties": [
+    {
+      "statement": "...",
+      "reason": "insufficient evidence"
+    }
+  ]
+}
 ```
 
-Target:
-
-* **< 1%** (hard requirement)
-
-Notes:
-
-* Claims are atomic (one fact per claim)
-* Measured *after verification*, not raw generation
+Free-form text is rendered **only after verification**.
 
 ---
 
-#### 2.1.2 Unsupported Answer Rate (UAR)
+### 10.1.3 Anti-Patterns to Avoid
 
-**Definition:**
-Percentage of answers that contain **any unsupported claim**.
+❌ “Based on my knowledge…”
+❌ “It is likely that…”
+❌ “Typically, such systems…”
 
-Target:
-
-* **< 5%** (initial)
-* **< 1%** (mature system)
-
-This is stricter than CHR and more meaningful for legal use.
+These phrases correlate strongly with hallucinations.
 
 ---
 
-### 2.2 Abstention Quality Metrics
+## 10.2 Claim Extraction Design
 
-Enterprises prefer **safe refusal** over confident nonsense.
+Claim extraction must be:
 
-#### 2.2.1 Correct Abstention Rate (CAR)
-
-**Definition:**
-When required knowledge is missing, the system should **explicitly refuse or defer**.
-
-Target:
-
-* > **95%**
-
-Failure case:
-
-* model guesses instead of abstaining
+* deterministic
+* explainable
+* minimally model-dependent
 
 ---
 
-#### 2.2.2 False Abstention Rate (FAR)
+### 10.2.1 Claim Definition
 
-**Definition:**
-System abstains even though sufficient knowledge exists.
+A **claim** is an atomic factual assertion that can be verified independently.
 
-Target:
+Structure:
 
-* < **5%**
-
-This is a usability metric.
-
----
-
-### 2.3 Retrieval Metrics (GraphRAG-Specific)
-
-#### 2.3.1 Evidence Coverage
-
-**Definition:**
-Percentage of claims that have at least **one supporting graph node or document chunk**.
-
-Target:
-
-* > **99%**
+```json
+{
+  "claim_id": "C123",
+  "subject": "...",
+  "predicate": "...",
+  "object": "...",
+  "qualifiers": {
+    "time": "...",
+    "conditions": "..."
+  },
+  "evidence_refs": ["E12"]
+}
+```
 
 ---
 
-#### 2.3.2 Evidence Precision
+### 10.2.2 Extraction Strategy
 
-**Definition:**
-How often retrieved evidence is actually relevant to the claim.
+Preferred order:
 
-Target:
+1. Rule-based parsing (regex, patterns)
+2. Lightweight LLM extraction (only if needed)
+3. Manual fallbacks
 
-* > **90%**
-
-Low precision increases:
-
-* latency
-* verification cost
-* confusion in audits
+Claims should be **minimal**, even if it increases count.
 
 ---
 
-### 2.4 Latency Metrics (Enterprise-Tolerant)
+### 10.2.3 Claim Granularity Rule
 
-Latency is important, but **not dominant**.
-
-#### Chat Queries
-
-* TTFT: **≤ 4s**
-* End-to-end: **≤ 6s**
-
-#### Knowledge / GraphRAG Queries
-
-* TTFT: **≤ 8s**
-* End-to-end: **≤ 12s**
-
-These are acceptable in legal / finance workflows.
+> If a claim cannot be disproved independently, it is too large.
 
 ---
 
-### 2.5 Auditability Metrics
+## 11. Verification Engine Design
 
-#### 2.5.1 Trace Completeness
-
-Every answer must have:
-
-* retrieved nodes
-* graph paths
-* verification outcome
-* regeneration decisions
-
-Target:
-
-* **100%**
-
-If an answer cannot be traced, it must not be served.
+Verification is **the core safety mechanism**.
 
 ---
 
-## 3. Hallucination Benchmark Design
+## 11.1 Verification Inputs
 
-This section defines **how we test hallucination**, not how we avoid it.
+Each verification request includes:
 
----
-
-### 3.1 Benchmark Philosophy
-
-Do **not** benchmark:
-
-* model knowledge
-* trivia recall
-* general intelligence
-
-Benchmark:
-
-* grounding
-* refusal behavior
-* consistency
-* traceability
+* Claim
+* Supporting evidence nodes
+* Graph paths
+* Source metadata
 
 ---
 
-### 3.2 Claim-Centric Evaluation (Core)
+## 11.2 Verification Outcomes
 
-All benchmarks operate at **claim level**, not answer level.
+Each claim must resolve to **one** of:
 
-#### Step 1: Generate Answer
+| Outcome      | Meaning                    |
+| ------------ | -------------------------- |
+| supported    | Evidence clearly supports  |
+| contradicted | Evidence disproves         |
+| unsupported  | No evidence                |
+| ambiguous    | Evidence unclear / partial |
 
-#### Step 2: Extract Claims
-
-#### Step 3: Verify Each Claim
-
-#### Step 4: Score Outcome
-
----
-
-### 3.3 Claim Categories
-
-Each claim is labeled into one category:
-
-| Category     | Description                   |
-| ------------ | ----------------------------- |
-| Supported    | Evidence exists in graph/docs |
-| Contradicted | Evidence disproves claim      |
-| Unsupported  | No evidence found             |
-| Ambiguous    | Evidence incomplete / unclear |
-
-Only **Supported** claims are allowed to pass without regeneration.
+Only `supported` is allowed to pass silently.
 
 ---
 
-### 3.4 Benchmark Types
+## 11.3 Verification Methods
 
-#### 3.4.1 In-Domain Grounded Queries
+Verification is multi-layered.
 
-* Questions fully answerable from knowledge base
-* Tests retrieval + verification correctness
+### Layer 1: Graph Consistency
 
-Expected:
+* Edge existence
+* Direction correctness
+* Relationship type match
 
-* Near-zero hallucination
-* No abstention
+### Layer 2: Textual Support
 
----
+* Document snippets
+* Clause matching
+* Section references
 
-#### 3.4.2 Out-of-Scope Queries
+### Layer 3: Semantic Entailment (Optional)
 
-* Questions **not answerable** from knowledge base
-* Tests refusal behavior
-
-Expected:
-
-* Explicit abstention
-* No fabricated answers
+* NLI model
+* Conservative thresholds
 
 ---
 
-#### 3.4.3 Adversarial Queries
+## 11.4 Verification Policy Rules
 
-* Questions that *sound* answerable
-* Subtle missing facts
+Hard rules:
 
-Example:
+* Unsupported ≠ false → requires regeneration
+* Contradicted → block output
+* Ambiguous → must surface uncertainty
 
-> “What clause allows early termination in Contract X?”
+Soft rules:
 
-When no such clause exists.
-
-Expected:
-
-* Abstention or clarification request
+* Low confidence → optional clarification
+* Repeated ambiguity → escalate
 
 ---
 
-#### 3.4.4 Partial-Knowledge Queries
+## 12. Regeneration Strategy
 
-* Some facts exist, others don’t
+Regeneration must be:
 
-Expected:
-
-* Partial answer + explicit uncertainty
-* No guessing
+* targeted
+* bounded
+* explainable
 
 ---
 
-### 3.5 Regression Hallucination Tests
+### 12.1 Regeneration Scope
 
-Every change to:
+Allowed:
 
-* prompt
-* retrieval logic
-* verification logic
+* Single sentence
+* Single paragraph
+* Single claim
 
-must be run against:
+Disallowed:
 
-* a fixed hallucination benchmark set
+* Full answer regeneration by default
 
-Any increase in:
+---
+
+### 12.2 Regeneration Loop Limits
+
+* Max regeneration attempts per claim: **2**
+* Max total regeneration passes: **3**
+
+After limits:
+
+* Abstain or escalate
+
+---
+
+### 12.3 Regeneration Prompt Additions
+
+Regeneration prompts include:
+
+* Failed claim
+* Reason for failure
+* Allowed evidence set
+
+This prevents the model from “searching” for new facts.
+
+---
+
+## 13. Failure Modes & Safe Fallbacks
+
+Failures are expected.
+Silently failing is unacceptable.
+
+---
+
+### 13.1 Known Failure Modes
+
+| Failure              | Handling                 |
+| -------------------- | ------------------------ |
+| Retrieval miss       | Abstain                  |
+| Verification timeout | Partial answer + warning |
+| Model inconsistency  | Regenerate               |
+| Graph inconsistency  | Flag data issue          |
+| Resource exhaustion  | Graceful degrade         |
+
+---
+
+### 13.2 Safe Output Contract
+
+If confidence < threshold:
+
+* Answer must include uncertainty
+* Or explicitly refuse
+
+Never:
+
+* guess
+* fabricate
+* overgeneralize
+
+---
+
+## 14. Testing Strategy (Local-First)
+
+---
+
+### 14.1 Unit Tests
+
+* Claim extraction
+* Verification logic
+* Policy decisions
+
+No LLM calls here.
+
+---
+
+### 14.2 Integration Tests
+
+* Fixed prompts
+* Fixed retrieval sets
+* Deterministic outputs
+
+LLM randomness must be minimized.
+
+---
+
+### 14.3 Hallucination Regression Tests
+
+Mandatory before merges.
+
+Metrics checked:
 
 * CHR
 * UAR
+* CAR
 
-is a **hard failure**.
-
----
-
-## 4. Non-Goals (Important)
-
-This system explicitly does **not** aim to:
-
-* be creative
-* answer open-ended speculative questions
-* replace human judgment
-* operate without knowledge boundaries
-
-It is a **bounded reasoning system**.
+Any regression blocks deployment.
 
 ---
 
-Great — continuing the **internal dev guide**.
-This section will lock down **architecture, data flow, and component boundaries**, still staying Python-first and implementation-oriented.
+## 15. Development Guardrails
 
----
+These rules are non-negotiable:
 
-# 5. System Architecture
-
-## 5.1 High-Level Architecture
-
-The system is designed as a **multi-stage, local-first reasoning pipeline**.
-
-Key principle:
-
-> **LLMs never access raw enterprise data directly. They operate only on retrieved, bounded context.**
-
-### Logical Components
-
-```
-┌────────────┐
-│   Client   │
-└─────┬──────┘
-      │
-      ▼
-┌────────────────────┐
-│  Query Orchestrator │
-└─────┬──────────────┘
-      │
-      ├─────────────► Retrieval Layer (GraphRAG)
-      │                     │
-      │                     ▼
-      │              Evidence Set
-      │
-      ▼
-┌────────────────────┐
-│  Generator (LLM)   │
-└─────┬──────────────┘
-      │
-      ▼
-┌────────────────────┐
-│ Claim Extraction   │
-└─────┬──────────────┘
-      │
-      ▼
-┌────────────────────┐
-│ Verification Layer │
-└─────┬──────────────┘
-      │
-      ▼
-┌────────────────────┐
-│ Response Controller│
-└─────┬──────────────┘
-      │
-      ▼
-┌────────────┐
-│   Output   │
-└────────────┘
-```
-
----
-
-## 5.2 Node-Level Deployment
-
-### Node 1 — **Inference Node (RTX 2060)**
-
-Responsibilities:
-
-* LLM generation
-* Prompt construction
-* Partial regeneration
-* Final answer assembly
-
-Hard rule:
-
-* **No graph traversal**
-* **No embedding computation**
-* **No verification**
-
-This node is latency-sensitive.
-
----
-
-### Node 2 — **Knowledge + Verification Node (GTX 1660)**
-
-Responsibilities:
-
-* GraphDB queries
-* Embedding search
-* Reranking
-* Claim verification
-* Evidence scoring
-
-This node is correctness-sensitive, not latency-sensitive.
-
----
-
-## 6. Request Lifecycle (End-to-End Flow)
-
-This is the **canonical execution path**.
-All optimizations must preserve this structure.
-
----
-
-### Step 1: Query Intake
-
-**Component:** Query Orchestrator (Node 1)
-
-Responsibilities:
-
-* Normalize input
-* Detect query type:
-
-  * chat
-  * factual lookup
-  * analytical / multi-hop
-* Assign execution policy
-
-Output:
-
-```json
-{
-  "query": "...",
-  "query_type": "graph_rag",
-  "confidence_requirement": "high"
-}
-```
-
----
-
-### Step 2: Retrieval (GraphRAG)
-
-**Component:** Retrieval Layer (Node 2)
-
-Retrieval is **two-stage**:
-
-1. **Graph Traversal**
-
-   * Explicit edges
-   * Relationship constraints
-2. **Semantic Augmentation**
-
-   * Embedding similarity
-   * Limited top-k
-
-Hard limits:
-
-* Max nodes: 50–100
-* Max tokens injected: 512–1024
-
-Output:
-
-```json
-{
-  "evidence_nodes": [...],
-  "documents": [...],
-  "graph_paths": [...]
-}
-```
-
----
-
-### Step 3: Context Packaging
-
-**Component:** Context Packager (Node 1)
-
-Responsibilities:
-
-* Deduplicate evidence
-* Rank by relevance
-* Convert to **structured context**
-
-Context format:
-
-* Bullet facts
-* Tables
-* Explicit source IDs
-
-LLMs should **never receive raw documents**.
-
----
-
-### Step 4: Answer Generation
-
-**Component:** Generator LLM (Node 1)
-
-Model:
-
-* DeepSeek-R1-Distill-Llama-8B (Q4)
-
-Prompt rules:
-
-* Must cite evidence IDs
-* Must not speculate
-* Must state uncertainty explicitly
-
-Output includes:
-
-* Answer text
-* Inline evidence references
-
----
-
-### Step 5: Claim Extraction
-
-**Component:** Claim Extractor (Node 1, CPU)
-
-Purpose:
-
-* Convert free-form text into **atomic claims**
-
-Example:
-
-```
-"The contract allows early termination after 90 days."
-```
-
-Becomes:
-
-```json
-{
-  "subject": "contract",
-  "predicate": "allows termination",
-  "object": "after 90 days"
-}
-```
-
-This step is deterministic and rule-based where possible.
-
----
-
-### Step 6: Claim Verification
-
-**Component:** Verification Engine (Node 2)
-
-Each claim is checked against:
-
-* Graph edges
-* Document snippets
-* Prior verified claims
-
-Outcomes:
-
-* supported
-* contradicted
-* unsupported
-* ambiguous
-
----
-
-### Step 7: Response Control
-
-**Component:** Response Controller (Node 1)
-
-Decision logic:
-
-| Verification Result | Action                              |
-| ------------------- | ----------------------------------- |
-| All supported       | Return answer                       |
-| Minor unsupported   | Regenerate section                  |
-| Contradiction       | Block + regenerate                  |
-| Ambiguous           | Add uncertainty / ask clarification |
-
-This is **policy-driven**, not model-driven.
-
----
-
-## 7. Architecture Guarantees
-
-The system guarantees:
-
-* No claim without evidence
-* No silent guessing
-* No unverifiable output
-* Deterministic regeneration decisions
-
-If a guarantee cannot be met:
-
-* the system must abstain
-
----
-
-## 8. Python-Centric Technology Stack
-
-This section lists **preferred tools**, not rigid requirements.
-
----
-
-### 8.1 Core Language
-
-* **Python 3.10+**
-
-Reasons:
-
-* ecosystem maturity
-* LLM tooling
-* graph libraries
-* rapid iteration
-
----
-
-### 8.2 LLM Inference
-
-**Primary**
-
-* `llama.cpp` (Python bindings)
-* GGUF models
-* mmap-enabled loading
-
-**Alternatives**
-
-* HuggingFace + CUDA (only if VRAM allows)
-
----
-
-### 8.3 Graph Layer
-
-Options (pick one initially):
-
-* Neo4j (Cypher, strong tooling)
-* RedisGraph (lighter, faster)
-* NetworkX (for prototypes)
-
-Graph must support:
-
-* path queries
-* relationship types
-* metadata on nodes/edges
-
----
-
-### 8.4 Vector / Embeddings
-
-* `sentence-transformers`
-* `faiss` (CPU index)
-* Optional GPU FAISS on Node 2
-
-Embedding storage:
-
-* in-memory preferred
-* disk only for cold data
-
----
-
-### 8.5 Verification Models
-
-* Small instruction-tuned LLM (3B–7B Q4)
-* Or NLI model (entailment-based)
-
-Verification runs:
-
-* batched
-* non-streaming
-* timeout-safe
-
----
-
-### 8.6 Orchestration & APIs
-
-* `FastAPI` (inter-node APIs)
-* JSON over HTTP
-* Stateless calls
-
-No message queues initially.
-
----
-
-### 8.7 Observability
-
-Mandatory:
-
-* Structured logs (JSON)
-* Per-claim verification logs
-* Latency breakdowns
-
-Optional:
-
-* Prometheus metrics
-* Simple dashboards
-
----
-
-## 9. What We Still Haven’t Defined (On Purpose)
-
-These will be addressed later:
-
-* Exact prompts
-* Schema for claims
-* Regeneration thresholds
-* Policy DSL
-* Human-in-the-loop workflows
-
-They depend on:
-
-* domain
-* data shape
-* enterprise tolerance
-
----
-
-Continuing the **internal development guide**.
-This section focuses on **knowledge modeling, ingestion, security boundaries, and deployment modes** — the parts that make this *enterprise-viable*, not just technically correct.
+* No direct LLM-to-database access
+* No unchecked generation
+* No silent fallbacks
+* No prompt changes without benchmarks
 
 ---
 
