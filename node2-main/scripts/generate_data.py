@@ -6,6 +6,7 @@ Outputs JSON files for nodes/edges and Cypher statements for Neo4j import.
 """
 
 import argparse
+import asyncio
 import json
 import os
 import sys
@@ -16,6 +17,11 @@ from typing import Any
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+
+# Ensure we can import from app
+sys.path.append(str(Path(__file__).parent.parent))
+
+from app.graph.connection import Neo4jConnection
 
 # Load environment variables
 load_dotenv()
@@ -610,6 +616,101 @@ def export_cypher(
 
 
 # =============================================================================
+# Database Seeding
+# =============================================================================
+
+
+async def seed_database(nodes: dict[str, list], edges: dict[str, list]) -> None:
+    """Seed the Neo4j database with generated data."""
+    try:
+        await Neo4jConnection.connect()
+        async with Neo4jConnection.get_session() as session:
+            print("  Inserting nodes...")
+            for node_type, node_list in nodes.items():
+                if not node_list:
+                    continue
+
+                label = NODE_LABEL_MAP.get(node_type, node_type.title())
+                print(f"    - {label}: {len(node_list)}")
+
+                for node in node_list:
+                    # Reuse node_to_cypher logic but strip the trailing semicolon
+                    stmt = node_to_cypher(label, node).strip(";")
+                    await session.run(stmt)
+
+            print("  Inserting edges...")
+            for edge_type, edge_list in edges.items():
+                if not edge_list:
+                    continue
+
+                labels = EDGE_LABEL_MAP.get(edge_type)
+                if not labels:
+                    continue
+
+                print(f"    - {edge_type}: {len(edge_list)}")
+                for edge in edge_list:
+                    # Reuse edge_to_cypher logic but strip the trailing semicolon
+                    stmt = edge_to_cypher(edge, labels[0], labels[1]).strip(";")
+                    await session.run(stmt)
+
+        print("  ✅ Database seeded successfully!")
+
+    finally:
+        await Neo4jConnection.disconnect()
+
+
+def load_existing_data(output_dir: Path) -> tuple[dict[str, list], dict[str, list]]:
+    """Load existing JSON data from the output directory."""
+    print(f"Loading existing data from {output_dir}...")
+
+    nodes = {}
+    edges = {}
+
+    # Load nodes
+    node_dir = output_dir / "nodes"
+    if node_dir.exists():
+        for file in node_dir.glob("*.json"):
+            key = file.stem + "s"  # bank -> banks
+            # Fix pluralization for words ending in y (policy -> policies)
+            if file.stem.endswith("y"):
+                key = file.stem[:-1] + "ies"
+            elif file.stem.endswith(
+                "sh"
+            ):  # threshold -> thresholds (handled by 's' rule but let's be safe)
+                pass
+
+            # Special case mapping to match keys used in generation
+            if file.stem == "risk_flag":
+                key = "risk_flags"
+
+            with open(file, encoding="utf-8") as f:
+                nodes[key] = json.load(f)
+            print(f"  Loaded {len(nodes[key])} {key}")
+
+    # Load edges
+    edge_dir = output_dir / "edges"
+    if edge_dir.exists():
+        for file in edge_dir.glob("*.json"):
+            key = file.stem.upper()
+            with open(file, encoding="utf-8") as f:
+                edges[key] = json.load(f)
+            print(f"  Loaded {len(edges[key])} {key} edges")
+
+    return nodes, edges
+
+
+def run_seed_database(nodes: dict[str, list], edges: dict[str, list]) -> None:
+    """Run the async database seeding."""
+    print("=" * 60)
+    print("Seeding Database...")
+    print("=" * 60)
+    try:
+        asyncio.run(seed_database(nodes, edges))
+    except Exception as e:
+        print(f"❌ Database seeding failed: {e}")
+
+
+# =============================================================================
 # Main Orchestration
 # =============================================================================
 
@@ -620,18 +721,29 @@ def run_generation(
     transactions_count: int = 5,
     seed: int = 42,
     output_dir: Path = DEFAULT_OUTPUT_DIR,
+    seed_db: bool = False,
+    seed_only: bool = False,
 ) -> None:
-    """Run the full synthetic data generation pipeline."""
+    """Run the synthetic data generation pipeline."""
     print("=" * 60)
     print("Synthetic Financial Data Generator")
     print("=" * 60)
     print("Configuration:")
-    print(f"  Banks: {banks_count}")
-    print(f"  Customers per bank: {customers_count}")
-    print(f"  Transactions per customer: {transactions_count}")
-    print(f"  Seed: {seed}")
+    if seed_only:
+        print("  Mode: SEED ONLY (skipping generation)")
+    else:
+        print(f"  Banks: {banks_count}")
+        print(f"  Customers per bank: {customers_count}")
+        print(f"  Transactions per customer: {transactions_count}")
+        print(f"  Seed: {seed}")
     print(f"  Output: {output_dir}")
     print()
+
+    # Step: Seed Only Mode
+    if seed_only:
+        all_nodes, edges = load_existing_data(output_dir)
+        run_seed_database(all_nodes, edges)
+        return
 
     # Create output directories
     ensure_output_dirs(output_dir)
@@ -685,6 +797,10 @@ def run_generation(
 
     # Step 6: Export Cypher
     export_cypher(all_nodes, edges, output_dir)
+
+    # Step 7: Seed Database (if requested)
+    if seed_db:
+        run_seed_database(all_nodes, edges)
 
     # Summary
     print()
@@ -740,6 +856,16 @@ def main():
         default=DEFAULT_OUTPUT_DIR,
         help=f"Output directory (default: {DEFAULT_OUTPUT_DIR})",
     )
+    parser.add_argument(
+        "--seed-db",
+        action="store_true",
+        help="Automatically seed the generated data into the local Neo4j database",
+    )
+    parser.add_argument(
+        "--seed-only",
+        action="store_true",
+        help="Skip generation and populate database from existing files",
+    )
 
     args = parser.parse_args()
 
@@ -753,6 +879,8 @@ def main():
         transactions_count=args.transactions,
         seed=args.seed,
         output_dir=args.output_dir,
+        seed_db=args.seed_db,
+        seed_only=args.seed_only,
     )
 
 
