@@ -1,0 +1,26 @@
+Generate synthetic banks for a financial knowledge graph.
+
+Create {count} unique synthetic banks in JSON format. Each bank represents a financial institution for testing compliance and AML systems.
+
+For each bank, provide:
+- bank_id: Format "BANK_XXX" (3-digit number)
+- name: A realistic but fictional bank name
+- country: Two-letter country code (e.g., "IN", "US", "UK", "SG")
+- regulatory_region: The regulatory body (e.g., "RBI" for India, "FCA" for UK, "FDIC" for US)
+
+Requirements:
+1. Bank names should sound professional and realistic
+2. Include banks from at least 2 different countries
+3. Regulatory regions must match the country
+
+Output format: Valid JSON array only. No markdown formatting, no explanations.
+
+Example output structure:
+[
+  {
+    "bank_id": "BANK_001",
+    "name": "Synthetic Bank A",
+    "country": "IN",
+    "regulatory_region": "RBI"
+  }
+]

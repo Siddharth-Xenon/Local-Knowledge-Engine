@@ -1,0 +1,32 @@
+[
+  {
+    "from": "RULE_AML_001",
+    "to": "TH_AML_001",
+    "type": "USES_THRESHOLD"
+  },
+  {
+    "from": "RULE_AML_002",
+    "to": "TH_AML_002",
+    "type": "USES_THRESHOLD"
+  },
+  {
+    "from": "RULE_FRAUD_001",
+    "to": "TH_FRD_001",
+    "type": "USES_THRESHOLD"
+  },
+  {
+    "from": "RULE_AML_001",
+    "to": "TH_AML_001",
+    "type": "USES_THRESHOLD"
+  },
+  {
+    "from": "RULE_AML_002",
+    "to": "TH_AML_002",
+    "type": "USES_THRESHOLD"
+  },
+  {
+    "from": "RULE_FRD_001",
+    "to": "TH_FRD_001",
+    "type": "USES_THRESHOLD"
+  }
+]

@@ -1,0 +1,86 @@
+[
+  {
+    "account_id": "ACC_102938",
+    "customer_id": "CUST_12845",
+    "bank_id": "BANK_789",
+    "account_type": "savings",
+    "opened_on": "2021-03-12",
+    "status": "active",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  },
+  {
+    "account_id": "ACC_102939",
+    "customer_id": "CUST_12845",
+    "bank_id": "BANK_789",
+    "account_type": "checking",
+    "opened_on": "2021-03-12",
+    "status": "active",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  },
+  {
+    "account_id": "ACC_456281",
+    "customer_id": "CUST_49201",
+    "bank_id": "BANK_789",
+    "account_type": "checking",
+    "opened_on": "2023-11-20",
+    "status": "active",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  },
+  {
+    "account_id": "ACC_882736",
+    "customer_id": "CUST_77312",
+    "bank_id": "BANK_789",
+    "account_type": "savings",
+    "opened_on": "2020-05-04",
+    "status": "active",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  },
+  {
+    "account_id": "ACC_334219",
+    "customer_id": "CUST_21094",
+    "bank_id": "BANK_789",
+    "account_type": "checking",
+    "opened_on": "2022-08-15",
+    "status": "suspended",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  },
+  {
+    "account_id": "ACC_334220",
+    "customer_id": "CUST_21094",
+    "bank_id": "BANK_789",
+    "account_type": "savings",
+    "opened_on": "2022-08-15",
+    "status": "active",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  },
+  {
+    "account_id": "ACC_771822",
+    "customer_id": "CUST_99485",
+    "bank_id": "BANK_789",
+    "account_type": "business",
+    "opened_on": "2024-01-10",
+    "status": "active",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  }
+]

@@ -1,0 +1,37 @@
+[
+  {
+    "from": "BANK_789",
+    "to": "ACC_102938",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_102939",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_456281",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_882736",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_334219",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_334220",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_771822",
+    "type": "OPERATES"
+  }
+]

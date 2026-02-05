@@ -1,0 +1,134 @@
+[
+  {
+    "rule_id": "RULE_AML_001",
+    "policy_id": "AML_421_01",
+    "rule_type": "threshold",
+    "description": "Flag single cash deposits exceeding regulatory reporting limits",
+    "severity": "high",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "rule_id": "RULE_AML_002",
+    "policy_id": "AML_421_01",
+    "rule_type": "conditional",
+    "description": "Monitor high-volume activity in newly opened accounts",
+    "severity": "medium",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "rule_id": "RULE_KYC_001",
+    "policy_id": "KYC_421_01",
+    "rule_type": "conditional",
+    "description": "Require enhanced due diligence for customers in high-risk jurisdictions",
+    "severity": "high",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "rule_id": "RULE_KYC_002",
+    "policy_id": "KYC_421_01",
+    "rule_type": "conditional",
+    "description": "Mandatory document refresh for corporate entities every 24 months",
+    "severity": "low",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "rule_id": "RULE_FRAUD_001",
+    "policy_id": "FRAUD_421_01",
+    "rule_type": "threshold",
+    "description": "Detect unusual high-value outbound transfers",
+    "severity": "high",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "rule_id": "RULE_FRAUD_002",
+    "policy_id": "FRAUD_421_01",
+    "rule_type": "conditional",
+    "description": "Block international wires from accounts less than 7 days old",
+    "severity": "high",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "rule_id": "RULE_AML_001",
+    "policy_id": "AML_101",
+    "rule_type": "threshold",
+    "description": "Flag single transactions exceeding high-value reporting limits",
+    "severity": "high",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  },
+  {
+    "rule_id": "RULE_AML_002",
+    "policy_id": "AML_101",
+    "rule_type": "threshold",
+    "description": "Monitor daily cumulative volume for potential structuring",
+    "severity": "medium",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  },
+  {
+    "rule_id": "RULE_KYC_001",
+    "policy_id": "KYC_202",
+    "rule_type": "conditional",
+    "description": "Enhanced due diligence for Politically Exposed Persons",
+    "severity": "high",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  },
+  {
+    "rule_id": "RULE_KYC_002",
+    "policy_id": "KYC_202",
+    "rule_type": "conditional",
+    "description": "Restrict high-value operations for new accounts",
+    "severity": "medium",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  },
+  {
+    "rule_id": "RULE_FRD_001",
+    "policy_id": "FRAUD_303",
+    "rule_type": "threshold",
+    "description": "Detect rapid sequence of withdrawals (Velocity check)",
+    "severity": "high",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  },
+  {
+    "rule_id": "RULE_FRD_002",
+    "policy_id": "FRAUD_303",
+    "rule_type": "conditional",
+    "description": "Flag transactions from dormant accounts",
+    "severity": "high",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  }
+]

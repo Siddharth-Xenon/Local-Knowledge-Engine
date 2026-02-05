@@ -1,0 +1,77 @@
+[
+  {
+    "from": "TXN_A1B2C3D4",
+    "to": "CUST_12845",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_E5F6G7H8",
+    "to": "CUST_12845",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_Z9Y8X7W6",
+    "to": "CUST_12845",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_A9B1C8D2",
+    "to": "CUST_49201",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_M4N7P2Q9",
+    "to": "CUST_49201",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_X3Y6Z1W8",
+    "to": "CUST_49201",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_A7B2C9D1",
+    "to": "CUST_77312",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_K9L3M8N4",
+    "to": "CUST_77312",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_P1Q5R2S9",
+    "to": "CUST_77312",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_A9B8C7D6",
+    "to": "CUST_21094",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_Z1Y2X3W4",
+    "to": "CUST_21094",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_M5N4P3Q2",
+    "to": "CUST_21094",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_A7B2C9D1",
+    "to": "CUST_99485",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_K8L3M4N5",
+    "to": "CUST_99485",
+    "type": "INITIATED_BY"
+  },
+  {
+    "from": "TXN_P1Q9R2S8",
+    "to": "CUST_99485",
+    "type": "INITIATED_BY"
+  }
+]

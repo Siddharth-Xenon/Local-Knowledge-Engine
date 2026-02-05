@@ -1,0 +1,37 @@
+[
+  {
+    "from": "CUST_12845",
+    "to": "ACC_102938",
+    "type": "OWNS_ACCOUNT"
+  },
+  {
+    "from": "CUST_12845",
+    "to": "ACC_102939",
+    "type": "OWNS_ACCOUNT"
+  },
+  {
+    "from": "CUST_49201",
+    "to": "ACC_456281",
+    "type": "OWNS_ACCOUNT"
+  },
+  {
+    "from": "CUST_77312",
+    "to": "ACC_882736",
+    "type": "OWNS_ACCOUNT"
+  },
+  {
+    "from": "CUST_21094",
+    "to": "ACC_334219",
+    "type": "OWNS_ACCOUNT"
+  },
+  {
+    "from": "CUST_21094",
+    "to": "ACC_334220",
+    "type": "OWNS_ACCOUNT"
+  },
+  {
+    "from": "CUST_99485",
+    "to": "ACC_771822",
+    "type": "OWNS_ACCOUNT"
+  }
+]

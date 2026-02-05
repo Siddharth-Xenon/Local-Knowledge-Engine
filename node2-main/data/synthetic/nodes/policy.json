@@ -1,0 +1,80 @@
+[
+  {
+    "policy_id": "AML_421_01",
+    "version": "v1",
+    "effective_from": "2024-01-01",
+    "effective_to": null,
+    "policy_type": "AML",
+    "status": "active",
+    "bank_id": "BANK_421",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "policy_id": "KYC_421_01",
+    "version": "v1",
+    "effective_from": "2024-01-01",
+    "effective_to": null,
+    "policy_type": "KYC",
+    "status": "active",
+    "bank_id": "BANK_421",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "policy_id": "FRAUD_421_01",
+    "version": "v1",
+    "effective_from": "2024-01-01",
+    "effective_to": null,
+    "policy_type": "FRAUD",
+    "status": "active",
+    "bank_id": "BANK_421",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "policy_id": "AML_101",
+    "version": "v1",
+    "effective_from": "2024-01-01",
+    "effective_to": null,
+    "policy_type": "AML",
+    "status": "active",
+    "bank_id": "BANK_789",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  },
+  {
+    "policy_id": "KYC_202",
+    "version": "v1",
+    "effective_from": "2024-01-01",
+    "effective_to": null,
+    "policy_type": "KYC",
+    "status": "active",
+    "bank_id": "BANK_789",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  },
+  {
+    "policy_id": "FRAUD_303",
+    "version": "v1",
+    "effective_from": "2024-01-01",
+    "effective_to": null,
+    "policy_type": "FRAUD",
+    "status": "active",
+    "bank_id": "BANK_789",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  }
+]

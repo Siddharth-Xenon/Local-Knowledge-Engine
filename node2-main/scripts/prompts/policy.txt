@@ -1,0 +1,49 @@
+Generate synthetic compliance policies for a banking knowledge graph.
+
+Create AML (Anti-Money Laundering), KYC (Know Your Customer), and FRAUD detection policies for bank: {bank_name} ({bank_id}).
+
+Generate:
+1. 2-3 Policies (one of each type: AML, KYC, FRAUD)
+2. 2-3 Rules per policy
+3. Thresholds and Conditions for each rule
+
+### Policy Structure:
+- policy_id: Format "AML_XXX", "KYC_XXX", or "FRAUD_XXX"
+- version: "v1" or "v2"
+- effective_from: ISO date (e.g., "2024-01-01")
+- effective_to: null (for active) or ISO date
+- policy_type: "AML", "KYC", or "FRAUD"
+- status: "active" or "deprecated"
+
+### Rule Structure:
+- rule_id: Format "RULE_XXX"
+- policy_id: Reference to parent policy
+- rule_type: "threshold" or "conditional"
+- description: Clear human-readable description
+- severity: "low", "medium", or "high"
+
+### Threshold Structure (for threshold rules):
+- threshold_id: Format "TH_XXX"
+- rule_id: Reference to parent rule
+- metric: e.g., "transaction_amount", "daily_volume"
+- operator: ">=", ">", "<", "<=", "=="
+- value: Numeric value
+- currency: "INR", "USD", etc. (if applicable)
+
+### Condition Structure (for conditional rules):
+- condition_id: Format "COND_XXX"
+- rule_id: Reference to parent rule
+- field: e.g., "account_age_days", "customer_type"
+- operator: ">", "<", "==", "in", "not_in"
+- value: String or number
+
+Output format: JSON object with keys "policies", "rules", "thresholds", "conditions".
+No markdown formatting, no explanations.
+
+Example output structure:
+{
+  "policies": [...],
+  "rules": [...],
+  "thresholds": [...],
+  "conditions": [...]
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "threshold_id": "TH_AML_001",
+    "rule_id": "RULE_AML_001",
+    "metric": "transaction_amount",
+    "operator": ">=",
+    "value": 10000,
+    "currency": "USD",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "threshold_id": "TH_AML_002",
+    "rule_id": "RULE_AML_002",
+    "metric": "daily_volume",
+    "operator": ">",
+    "value": 25000,
+    "currency": "USD",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "threshold_id": "TH_FRD_001",
+    "rule_id": "RULE_FRAUD_001",
+    "metric": "transaction_amount",
+    "operator": ">",
+    "value": 50000,
+    "currency": "USD",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:49.322345Z",
+    "last_verified": "2026-02-05T23:22:49.322345Z",
+    "confidence": 1.0
+  },
+  {
+    "threshold_id": "TH_AML_001",
+    "rule_id": "RULE_AML_001",
+    "metric": "transaction_amount",
+    "operator": ">=",
+    "value": 10000,
+    "currency": "USD",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  },
+  {
+    "threshold_id": "TH_AML_002",
+    "rule_id": "RULE_AML_002",
+    "metric": "daily_volume",
+    "operator": ">",
+    "value": 50000,
+    "currency": "USD",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  },
+  {
+    "threshold_id": "TH_FRD_001",
+    "rule_id": "RULE_FRD_001",
+    "metric": "hourly_withdrawal_count",
+    "operator": ">",
+    "value": 5,
+    "currency": null,
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:22:59.903817Z",
+    "last_verified": "2026-02-05T23:22:59.903817Z",
+    "confidence": 1.0
+  }
+]

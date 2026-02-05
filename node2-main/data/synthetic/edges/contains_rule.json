@@ -1,0 +1,62 @@
+[
+  {
+    "from": "AML_421_01",
+    "to": "RULE_AML_001",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "AML_421_01",
+    "to": "RULE_AML_002",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "KYC_421_01",
+    "to": "RULE_KYC_001",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "KYC_421_01",
+    "to": "RULE_KYC_002",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "FRAUD_421_01",
+    "to": "RULE_FRAUD_001",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "FRAUD_421_01",
+    "to": "RULE_FRAUD_002",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "AML_101",
+    "to": "RULE_AML_001",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "AML_101",
+    "to": "RULE_AML_002",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "KYC_202",
+    "to": "RULE_KYC_001",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "KYC_202",
+    "to": "RULE_KYC_002",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "FRAUD_303",
+    "to": "RULE_FRD_001",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "FRAUD_303",
+    "to": "RULE_FRD_002",
+    "type": "CONTAINS_RULE"
+  }
+]

@@ -1,0 +1,48 @@
+Generate synthetic customers and accounts for a banking knowledge graph.
+
+Create {count} customers who bank with {bank_name} ({bank_id}). Each customer should have 1-2 accounts.
+
+### Customer Structure:
+- customer_id: Format "CUST_XXXXX" (5-digit number)
+- bank_id: "{bank_id}"
+- risk_profile: "low", "medium", or "high"
+- customer_type: "individual" or "business"
+
+### Account Structure:
+- account_id: Format "ACC_XXXXXX" (6-digit number)
+- customer_id: Reference to owning customer
+- bank_id: "{bank_id}"
+- account_type: "savings", "checking", or "business"
+- opened_on: ISO date (random dates within last 5 years)
+- status: "active", "suspended", or "closed"
+
+Requirements:
+1. Create realistic distribution: 70% low risk, 20% medium risk, 10% high risk
+2. Individual customers should have savings/checking accounts
+3. Business customers should have business accounts
+4. Most accounts should be "active" (80%+)
+
+Output format: JSON object with keys "customers" and "accounts".
+No markdown formatting, no explanations.
+
+Example output structure:
+{
+  "customers": [
+    {
+      "customer_id": "CUST_00001",
+      "bank_id": "BANK_001",
+      "risk_profile": "low",
+      "customer_type": "individual"
+    }
+  ],
+  "accounts": [
+    {
+      "account_id": "ACC_000001",
+      "customer_id": "CUST_00001",
+      "bank_id": "BANK_001",
+      "account_type": "savings",
+      "opened_on": "2022-06-15",
+      "status": "active"
+    }
+  ]
+}

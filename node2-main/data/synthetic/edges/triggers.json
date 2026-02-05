@@ -1,0 +1,27 @@
+[
+  {
+    "from": "AML_101",
+    "to": "RF_5501",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_101",
+    "to": "RF_8821",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_101",
+    "to": "RF_9921",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_101",
+    "to": "RF_9021",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_101",
+    "to": "RF_1001",
+    "type": "TRIGGERS"
+  }
+]

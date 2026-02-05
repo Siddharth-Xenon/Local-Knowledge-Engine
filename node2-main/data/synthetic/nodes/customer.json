@@ -1,0 +1,52 @@
+[
+  {
+    "customer_id": "CUST_12845",
+    "bank_id": "BANK_789",
+    "risk_profile": "low",
+    "customer_type": "individual",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  },
+  {
+    "customer_id": "CUST_49201",
+    "bank_id": "BANK_789",
+    "risk_profile": "low",
+    "customer_type": "individual",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  },
+  {
+    "customer_id": "CUST_77312",
+    "bank_id": "BANK_789",
+    "risk_profile": "low",
+    "customer_type": "individual",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  },
+  {
+    "customer_id": "CUST_21094",
+    "bank_id": "BANK_789",
+    "risk_profile": "medium",
+    "customer_type": "individual",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  },
+  {
+    "customer_id": "CUST_99485",
+    "bank_id": "BANK_789",
+    "risk_profile": "high",
+    "customer_type": "business",
+    "source": "synthetic",
+    "created_at": "2026-02-05T23:23:20.040681Z",
+    "last_verified": "2026-02-05T23:23:20.040681Z",
+    "confidence": 1.0
+  }
+]

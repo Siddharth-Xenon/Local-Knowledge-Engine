@@ -1,0 +1,47 @@
+Generate synthetic transactions for a banking knowledge graph.
+
+Create {count} transactions for account {account_id} owned by customer {customer_id}.
+This account is with bank {bank_id} which has policies: {policy_ids}.
+
+### Transaction Structure:
+- transaction_id: Format "TXN_XXXXXXXX" (8-character alphanumeric)
+- account_id: "{account_id}"
+- customer_id: "{customer_id}"
+- amount: Numeric value (realistic range based on account type)
+- currency: "INR", "USD", etc.
+- timestamp: ISO datetime (within last 6 months)
+- channel: "online", "branch", "atm", or "international"
+- transaction_type: "transfer", "withdrawal", or "deposit"
+
+### RiskFlag Structure (for flagged transactions):
+- risk_flag_id: Format "RF_XXXX"
+- transaction_id: Reference to flagged transaction
+- rule_id: Reference to violated rule
+- flag_type: "manual_review", "block", or "notify"
+- confidence: Float between 0.5 and 1.0
+
+### Decision Structure:
+- decision_id: Format "DEC_XXXXX"
+- transaction_id: Reference to transaction
+- decision_type: "approved", "flagged", or "blocked"
+- reason: Human-readable explanation (null for approved)
+- timestamp: ISO datetime (shortly after transaction)
+
+Requirements:
+1. Create realistic transaction patterns
+2. ~15% of transactions should trigger risk flags based on:
+   - High amounts (>1,000,000 INR or equivalent)
+   - International transfers
+   - Unusual frequency
+3. Most transactions should be approved (~80%)
+4. Flagged transactions should have associated RiskFlag and Decision
+
+Output format: JSON object with keys "transactions", "risk_flags", "decisions".
+No markdown formatting, no explanations.
+
+Example output structure:
+{
+  "transactions": [...],
+  "risk_flags": [...],
+  "decisions": [...]
+}

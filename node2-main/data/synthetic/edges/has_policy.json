@@ -1,0 +1,32 @@
+[
+  {
+    "from": "BANK_421",
+    "to": "AML_421_01",
+    "type": "HAS_POLICY"
+  },
+  {
+    "from": "BANK_421",
+    "to": "KYC_421_01",
+    "type": "HAS_POLICY"
+  },
+  {
+    "from": "BANK_421",
+    "to": "FRAUD_421_01",
+    "type": "HAS_POLICY"
+  },
+  {
+    "from": "BANK_789",
+    "to": "AML_101",
+    "type": "HAS_POLICY"
+  },
+  {
+    "from": "BANK_789",
+    "to": "KYC_202",
+    "type": "HAS_POLICY"
+  },
+  {
+    "from": "BANK_789",
+    "to": "FRAUD_303",
+    "type": "HAS_POLICY"
+  }
+]
