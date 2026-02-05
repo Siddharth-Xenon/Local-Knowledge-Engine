@@ -654,16 +654,46 @@ Reasons:
 ---
 
 ### 8.2 LLM Inference
+Here’s an **updated version of section 8.2**, rewritten to reflect the decision to use **Ollama**, while keeping the document *engineering-focused* and future-proof.
+
+You can drop this directly into your markdown.
+
+---
+
+### 8.2 LLM Inference
+
+LLM inference is treated as a **replaceable runtime dependency**, not a core logic component.
+All safety, verification, and orchestration logic exists **outside** the inference engine.
+
+---
 
 **Primary**
 
-* `llama.cpp` (Python bindings)
-* GGUF models
-* mmap-enabled loading
+* **Ollama**
 
-**Alternatives**
+  * Local LLM runtime and model manager
+  * Serves GGUF-based models via HTTP API
+  * GPU-accelerated inference (CUDA)
+  * Simple deployment and lifecycle management
+  * Used as a **stateless inference backend**
 
-* HuggingFace + CUDA (only if VRAM allows)
+* **Models**
+
+  * DeepSeek-R1-Distill-Llama-8B (Q4) — primary generator
+  * Small instruction / NLI model (3B–7B Q4) — verifier
+  * All models run fully on a single GPU (no layer splitting)
+
+---
+
+**Integration Pattern**
+
+* Ollama is accessed only through internal Python services
+* Clients never interact with Ollama directly
+* All responses are:
+
+  * schema-validated
+  * post-processed
+  * verified before exposure
 
 ---
 
