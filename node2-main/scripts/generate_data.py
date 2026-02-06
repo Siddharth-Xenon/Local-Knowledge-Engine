@@ -190,6 +190,7 @@ def test_api_connection() -> bool:
 
 def generate_banks(count: int = 2) -> list[dict]:
     """Generate synthetic bank nodes."""
+
     print(f"Generating {count} banks...")
 
     prompt_template = load_prompt("bank")
@@ -209,6 +210,15 @@ def generate_banks(count: int = 2) -> list[dict]:
 
     banks = add_provenance(banks)
     print(f"  ✅ Generated {len(banks)} banks")
+    return banks
+
+
+def get_existing_banks() -> list[dict]:
+    """Get existing bank nodes from the database."""
+    print("Loading existing banks...")
+    with open("data/synthetic/nodes/bank.json", "r", encoding="utf-8") as f:
+        banks = json.load(f)
+    print(f"  ✅ Loaded {len(banks)} banks")
     return banks
 
 
@@ -749,11 +759,14 @@ def run_generation(
     ensure_output_dirs(output_dir)
 
     # Step 1: Generate banks
-    banks = generate_banks(banks_count)
-    if not banks:
-        print("❌ Failed to generate banks. Aborting.")
-        return
-    save_json(banks, output_dir, "nodes", "bank")
+    if banks_count == 0:
+        banks = get_existing_banks()
+    else:
+        banks = generate_banks(banks_count)
+        save_json(banks, output_dir, "nodes", "bank")
+        if not banks:
+            print("❌ Failed to generate banks. Aborting.")
+            return
 
     # Step 2: Generate policies for each bank
     policies, rules, thresholds, conditions = generate_policies(banks)
