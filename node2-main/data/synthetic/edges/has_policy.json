@@ -1,17 +1,32 @@
 [
   {
-    "from": "BANK_421",
-    "to": "AML_421",
+    "from": "BANK_412",
+    "to": "AML_412_01",
     "type": "HAS_POLICY"
   },
   {
-    "from": "BANK_421",
-    "to": "KYC_421",
+    "from": "BANK_412",
+    "to": "KYC_412_01",
     "type": "HAS_POLICY"
   },
   {
-    "from": "BANK_421",
-    "to": "FRAUD_421",
+    "from": "BANK_412",
+    "to": "FRAUD_412_01",
+    "type": "HAS_POLICY"
+  },
+  {
+    "from": "BANK_789",
+    "to": "AML_789_001",
+    "type": "HAS_POLICY"
+  },
+  {
+    "from": "BANK_789",
+    "to": "KYC_789_001",
+    "type": "HAS_POLICY"
+  },
+  {
+    "from": "BANK_789",
+    "to": "FRAUD_789_001",
     "type": "HAS_POLICY"
   }
 ]

@@ -5,6 +5,7 @@ Generates synthetic banking/finance knowledge graph data using Google Gemini API
 Outputs JSON files for nodes/edges and Cypher statements for Neo4j import.
 """
 
+import time
 import argparse
 import asyncio
 import json
@@ -89,7 +90,7 @@ def call_gemini_api(prompt: str, temperature: float = 0.7) -> str | None:
         ):
             if chunk.text:
                 full_response += chunk.text
-
+        time.sleep(5)
         return full_response if full_response else None
 
     except Exception as e:

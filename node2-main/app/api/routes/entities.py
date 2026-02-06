@@ -20,7 +20,7 @@ async def create_entity(request: EntityCreate) -> EntityResponse:
         **request.properties,
     }
 
-    node_id = await GraphRepository.create_node("Entity", properties)
+    node_id = await GraphRepository.create_node(request.type, properties)
 
     return EntityResponse(
         id=node_id,
@@ -63,7 +63,7 @@ async def list_entities(
         filters["type"] = type
 
     nodes = await GraphRepository.query_nodes(
-        label="Entity",
+        label=type,
         filters=filters if filters else None,
         limit=limit,
     )

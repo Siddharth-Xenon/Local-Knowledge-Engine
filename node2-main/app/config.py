@@ -27,9 +27,9 @@ class Settings(BaseSettings):
     port: int = 8000
 
     # Embedding Configuration
-    embedding_type: str = "mock"  # "mock" | "sentence-transformers"
-    embedding_model_name: str = "all-MiniLM-L6-v2"
-    embedding_dimension: int = 384
+    embedding_type: str = "sentence-transformers"  # "mock" | "sentence-transformers"
+    embedding_model_name: str = "intfloat/e5-base-v2"
+    embedding_dimension: int = 768
 
     # Index Configuration
     index_type: str = "memory"  # "memory" | "faiss"

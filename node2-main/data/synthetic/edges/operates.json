@@ -1,57 +1,277 @@
 [
   {
-    "from": "BANK_421",
-    "to": "ACC_100293",
+    "from": "BANK_412",
+    "to": "ACC_200001",
     "type": "OPERATES"
   },
   {
-    "from": "BANK_421",
-    "to": "ACC_100294",
+    "from": "BANK_412",
+    "to": "ACC_200002",
     "type": "OPERATES"
   },
   {
-    "from": "BANK_421",
-    "to": "ACC_882101",
+    "from": "BANK_412",
+    "to": "ACC_200003",
     "type": "OPERATES"
   },
   {
-    "from": "BANK_421",
-    "to": "ACC_441091",
+    "from": "BANK_412",
+    "to": "ACC_200004",
     "type": "OPERATES"
   },
   {
-    "from": "BANK_421",
-    "to": "ACC_105521",
+    "from": "BANK_412",
+    "to": "ACC_200005",
     "type": "OPERATES"
   },
   {
-    "from": "BANK_421",
-    "to": "ACC_105522",
+    "from": "BANK_412",
+    "to": "ACC_200006",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200007",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200008",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200009",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200010",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200011",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200012",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200013",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200014",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200015",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200016",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200017",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200018",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200019",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200020",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200021",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200022",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200023",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200024",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_412",
+    "to": "ACC_200025",
     "type": "OPERATES"
   },
   {
     "from": "BANK_789",
-    "to": "ACC_112233",
+    "to": "ACC_200001",
     "type": "OPERATES"
   },
   {
     "from": "BANK_789",
-    "to": "ACC_112234",
+    "to": "ACC_200002",
     "type": "OPERATES"
   },
   {
     "from": "BANK_789",
-    "to": "ACC_445566",
+    "to": "ACC_200003",
     "type": "OPERATES"
   },
   {
     "from": "BANK_789",
-    "to": "ACC_778899",
+    "to": "ACC_200004",
     "type": "OPERATES"
   },
   {
     "from": "BANK_789",
-    "to": "ACC_990011",
+    "to": "ACC_200005",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200006",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200007",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200008",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200009",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200010",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200011",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200012",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200013",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200014",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200015",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200016",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200017",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200018",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200019",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200020",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200021",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200022",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200023",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200024",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200025",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200026",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200027",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200028",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200029",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_789",
+    "to": "ACC_200030",
     "type": "OPERATES"
   }
 ]

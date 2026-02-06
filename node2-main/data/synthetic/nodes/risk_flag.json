@@ -1,182 +1,452 @@
 [
   {
-    "risk_flag_id": "RF_7721",
-    "transaction_id": "TXN_I9J0K1L2",
-    "rule_id": "AML_421",
-    "flag_type": "manual_review",
-    "confidence": 1.0,
-    "source": "synthetic",
-    "created_at": "2026-02-06T05:49:52.367806Z",
-    "last_verified": "2026-02-06T05:49:52.367806Z"
-  },
-  {
-    "risk_flag_id": "RF_8832",
-    "transaction_id": "TXN_Q7R8S9T0",
-    "rule_id": "FRAUD_421",
-    "flag_type": "notify",
-    "confidence": 1.0,
-    "source": "synthetic",
-    "created_at": "2026-02-06T05:49:52.367806Z",
-    "last_verified": "2026-02-06T05:49:52.367806Z"
-  },
-  {
-    "risk_flag_id": "RF_9943",
-    "transaction_id": "TXN_C9D0E1F2",
-    "rule_id": "FRAUD_421",
-    "flag_type": "block",
-    "confidence": 1.0,
-    "source": "synthetic",
-    "created_at": "2026-02-06T05:49:52.367806Z",
-    "last_verified": "2026-02-06T05:49:52.367806Z"
-  },
-  {
     "risk_flag_id": "RF_1001",
-    "transaction_id": "TXN_I9J0K1L2",
-    "rule_id": "AML_421",
+    "transaction_id": "TXN_A0101003",
+    "rule_id": "AML_412_01",
     "flag_type": "manual_review",
     "confidence": 1.0,
     "source": "synthetic",
-    "created_at": "2026-02-06T05:50:24.840113Z",
-    "last_verified": "2026-02-06T05:50:24.840113Z"
+    "created_at": "2026-02-06T15:13:39.690208Z",
+    "last_verified": "2026-02-06T15:13:39.690208Z"
   },
   {
     "risk_flag_id": "RF_1002",
-    "transaction_id": "TXN_Q7R8S9T0",
-    "rule_id": "FRAUD_421",
+    "transaction_id": "TXN_A0101005",
+    "rule_id": "FRAUD_412_01",
     "flag_type": "block",
     "confidence": 1.0,
     "source": "synthetic",
-    "created_at": "2026-02-06T05:50:24.840113Z",
-    "last_verified": "2026-02-06T05:50:24.840113Z"
+    "created_at": "2026-02-06T15:13:39.690208Z",
+    "last_verified": "2026-02-06T15:13:39.690208Z"
   },
   {
     "risk_flag_id": "RF_1003",
-    "transaction_id": "TXN_K7L8M9N0",
-    "rule_id": "AML_421",
-    "flag_type": "manual_review",
-    "confidence": 1.0,
-    "source": "synthetic",
-    "created_at": "2026-02-06T05:50:24.840113Z",
-    "last_verified": "2026-02-06T05:50:24.840113Z"
-  },
-  {
-    "risk_flag_id": "RF_1001",
-    "transaction_id": "TXN_I9J0K1L2",
-    "rule_id": "AML_421",
-    "flag_type": "manual_review",
-    "confidence": 1.0,
-    "source": "synthetic",
-    "created_at": "2026-02-06T05:50:58.959620Z",
-    "last_verified": "2026-02-06T05:50:58.959620Z"
-  },
-  {
-    "risk_flag_id": "RF_1002",
-    "transaction_id": "TXN_Q7R8S9T0",
-    "rule_id": "FRAUD_421",
+    "transaction_id": "TXN_A0101011",
+    "rule_id": "FRAUD_412_01",
     "flag_type": "notify",
     "confidence": 1.0,
     "source": "synthetic",
-    "created_at": "2026-02-06T05:50:58.959620Z",
-    "last_verified": "2026-02-06T05:50:58.959620Z"
-  },
-  {
-    "risk_flag_id": "RF_1003",
-    "transaction_id": "TXN_O1P2Q3R4",
-    "rule_id": "FRAUD_421",
-    "flag_type": "block",
-    "confidence": 1.0,
-    "source": "synthetic",
-    "created_at": "2026-02-06T05:50:58.959620Z",
-    "last_verified": "2026-02-06T05:50:58.959620Z"
-  },
-  {
-    "risk_flag_id": "RF_8801",
-    "transaction_id": "TXN_E4J6P3S5",
-    "rule_id": "AML_421",
-    "flag_type": "manual_review",
-    "confidence": 1.0,
-    "source": "synthetic",
-    "created_at": "2026-02-06T05:51:45.292955Z",
-    "last_verified": "2026-02-06T05:51:45.292955Z"
-  },
-  {
-    "risk_flag_id": "RF_8802",
-    "transaction_id": "TXN_F3K7Q4T6",
-    "rule_id": "FRAUD_421",
-    "flag_type": "notify",
-    "confidence": 1.0,
-    "source": "synthetic",
-    "created_at": "2026-02-06T05:51:45.292955Z",
-    "last_verified": "2026-02-06T05:51:45.292955Z"
-  },
-  {
-    "risk_flag_id": "RF_8803",
-    "transaction_id": "TXN_J9O1U8X0",
-    "rule_id": "AML_421",
-    "flag_type": "block",
-    "confidence": 1.0,
-    "source": "synthetic",
-    "created_at": "2026-02-06T05:51:45.292955Z",
-    "last_verified": "2026-02-06T05:51:45.292955Z"
+    "created_at": "2026-02-06T15:13:39.690208Z",
+    "last_verified": "2026-02-06T15:13:39.690208Z"
   },
   {
     "risk_flag_id": "RF_0001",
-    "transaction_id": "TXN_Q7R8S9T0",
-    "rule_id": "RULE_HIGH_VAL",
+    "transaction_id": "TXN_M3N4O5P6",
+    "rule_id": "AML_412_01",
     "flag_type": "manual_review",
     "confidence": 1.0,
     "source": "synthetic",
-    "created_at": "2026-02-06T05:52:20.626547Z",
-    "last_verified": "2026-02-06T05:52:20.626547Z"
+    "created_at": "2026-02-06T15:14:15.280604Z",
+    "last_verified": "2026-02-06T15:14:15.280604Z"
   },
   {
     "risk_flag_id": "RF_0002",
-    "transaction_id": "TXN_U1V2W3X4",
-    "rule_id": "RULE_INTL_XFER",
+    "transaction_id": "TXN_C9D0E1F2",
+    "rule_id": "FRAUD_412_01",
     "flag_type": "notify",
     "confidence": 1.0,
     "source": "synthetic",
-    "created_at": "2026-02-06T05:52:20.626547Z",
-    "last_verified": "2026-02-06T05:52:20.626547Z"
+    "created_at": "2026-02-06T15:14:15.280604Z",
+    "last_verified": "2026-02-06T15:14:15.280604Z"
   },
   {
     "risk_flag_id": "RF_0003",
-    "transaction_id": "TXN_O1P2Q3R4",
-    "rule_id": "RULE_FREQ_ANOMALY",
+    "transaction_id": "TXN_W9X0Y1Z2",
+    "rule_id": "AML_412_01",
     "flag_type": "block",
     "confidence": 1.0,
     "source": "synthetic",
-    "created_at": "2026-02-06T05:52:20.626547Z",
-    "last_verified": "2026-02-06T05:52:20.626547Z"
+    "created_at": "2026-02-06T15:14:15.280604Z",
+    "last_verified": "2026-02-06T15:14:15.280604Z"
   },
   {
-    "risk_flag_id": "RF_A101",
-    "transaction_id": "TXN_91A77C22",
-    "rule_id": "RULE_HIGH_VAL",
+    "risk_flag_id": "RF_1001",
+    "transaction_id": "TXN_M3N4O5P6",
+    "rule_id": "AML_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:14:50.148000Z",
+    "last_verified": "2026-02-06T15:14:50.148000Z"
+  },
+  {
+    "risk_flag_id": "RF_1002",
+    "transaction_id": "TXN_U1V2W3X4",
+    "rule_id": "FRAUD_412_01",
     "flag_type": "manual_review",
     "confidence": 1.0,
     "source": "synthetic",
-    "created_at": "2026-02-06T05:52:57.679665Z",
-    "last_verified": "2026-02-06T05:52:57.679665Z"
+    "created_at": "2026-02-06T15:14:50.148000Z",
+    "last_verified": "2026-02-06T15:14:50.148000Z"
   },
   {
-    "risk_flag_id": "RF_B202",
-    "transaction_id": "TXN_77C44E11",
-    "rule_id": "RULE_INTL_XFER",
+    "risk_flag_id": "RF_1003",
+    "transaction_id": "TXN_O1P2Q3R4",
+    "rule_id": "FRAUD_412_01",
     "flag_type": "notify",
     "confidence": 1.0,
     "source": "synthetic",
-    "created_at": "2026-02-06T05:52:57.679665Z",
-    "last_verified": "2026-02-06T05:52:57.679665Z"
+    "created_at": "2026-02-06T15:14:50.148000Z",
+    "last_verified": "2026-02-06T15:14:50.148000Z"
   },
   {
-    "risk_flag_id": "RF_C303",
-    "transaction_id": "TXN_55K33L77",
-    "rule_id": "RULE_HIGH_DEP",
+    "risk_flag_id": "RF_0001",
+    "transaction_id": "TXN_F6G7H8I9",
+    "rule_id": "AML_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:15:27.263789Z",
+    "last_verified": "2026-02-06T15:15:27.263789Z"
+  },
+  {
+    "risk_flag_id": "RF_0002",
+    "transaction_id": "TXN_K1L2M3N4",
+    "rule_id": "FRAUD_412_01",
     "flag_type": "block",
     "confidence": 1.0,
     "source": "synthetic",
-    "created_at": "2026-02-06T05:52:57.679665Z",
-    "last_verified": "2026-02-06T05:52:57.679665Z"
+    "created_at": "2026-02-06T15:15:27.263789Z",
+    "last_verified": "2026-02-06T15:15:27.263789Z"
+  },
+  {
+    "risk_flag_id": "RF_0003",
+    "transaction_id": "TXN_P6Q7R8S9",
+    "rule_id": "AML_412_01",
+    "flag_type": "notify",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:15:27.263789Z",
+    "last_verified": "2026-02-06T15:15:27.263789Z"
+  },
+  {
+    "risk_flag_id": "RF_1001",
+    "transaction_id": "TXN_J1K5L9M3",
+    "rule_id": "AML_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:16:02.755139Z",
+    "last_verified": "2026-02-06T15:16:02.755139Z"
+  },
+  {
+    "risk_flag_id": "RF_1002",
+    "transaction_id": "TXN_S5T1U9V3",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:16:02.755139Z",
+    "last_verified": "2026-02-06T15:16:02.755139Z"
+  },
+  {
+    "risk_flag_id": "RF_1003",
+    "transaction_id": "TXN_Z1A5B9C3",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "notify",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:16:02.755139Z",
+    "last_verified": "2026-02-06T15:16:02.755139Z"
+  },
+  {
+    "risk_flag_id": "RF_1001",
+    "transaction_id": "TXN_5T6Y2U9D",
+    "rule_id": "AML_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:16:41.591461Z",
+    "last_verified": "2026-02-06T15:16:41.591461Z"
+  },
+  {
+    "risk_flag_id": "RF_1002",
+    "transaction_id": "TXN_4M6N8B2L",
+    "rule_id": "KYC_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:16:41.591461Z",
+    "last_verified": "2026-02-06T15:16:41.591461Z"
+  },
+  {
+    "risk_flag_id": "RF_1003",
+    "transaction_id": "TXN_9Z8X7C6V",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "notify",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:16:41.591461Z",
+    "last_verified": "2026-02-06T15:16:41.591461Z"
+  },
+  {
+    "risk_flag_id": "RF_9001",
+    "transaction_id": "TXN_99C3D4E5",
+    "rule_id": "AML_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:17:20.533276Z",
+    "last_verified": "2026-02-06T15:17:20.533276Z"
+  },
+  {
+    "risk_flag_id": "RF_9002",
+    "transaction_id": "TXN_00D4E5F6",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:17:20.533276Z",
+    "last_verified": "2026-02-06T15:17:20.533276Z"
+  },
+  {
+    "risk_flag_id": "RF_9003",
+    "transaction_id": "TXN_55I9J0K1",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "notify",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:17:20.533276Z",
+    "last_verified": "2026-02-06T15:17:20.533276Z"
+  },
+  {
+    "risk_flag_id": "RF_1001",
+    "transaction_id": "TXN_9R2S5T7U",
+    "rule_id": "AML_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:17:57.764654Z",
+    "last_verified": "2026-02-06T15:17:57.764654Z"
+  },
+  {
+    "risk_flag_id": "RF_1002",
+    "transaction_id": "TXN_5Z8A2B4C",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "notify",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:17:57.764654Z",
+    "last_verified": "2026-02-06T15:17:57.764654Z"
+  },
+  {
+    "risk_flag_id": "RF_1003",
+    "transaction_id": "TXN_7L9M1N3P",
+    "rule_id": "AML_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:17:57.764654Z",
+    "last_verified": "2026-02-06T15:17:57.764654Z"
+  },
+  {
+    "risk_flag_id": "RF_7001",
+    "transaction_id": "TXN_Y7Z8A9B0",
+    "rule_id": "AML_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:18:36.079761Z",
+    "last_verified": "2026-02-06T15:18:36.079761Z"
+  },
+  {
+    "risk_flag_id": "RF_7002",
+    "transaction_id": "TXN_K9L0M1N2",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:18:36.079761Z",
+    "last_verified": "2026-02-06T15:18:36.079761Z"
+  },
+  {
+    "risk_flag_id": "RF_7003",
+    "transaction_id": "TXN_M7N8O9P0",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "notify",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:18:36.079761Z",
+    "last_verified": "2026-02-06T15:18:36.079761Z"
+  },
+  {
+    "risk_flag_id": "RF_1001",
+    "transaction_id": "TXN_1M4N5P6Q",
+    "rule_id": "AML_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:19:16.413182Z",
+    "last_verified": "2026-02-06T15:19:16.413182Z"
+  },
+  {
+    "risk_flag_id": "RF_1002",
+    "transaction_id": "TXN_5V4W3X2Y",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "notify",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:19:16.413182Z",
+    "last_verified": "2026-02-06T15:19:16.413182Z"
+  },
+  {
+    "risk_flag_id": "RF_1003",
+    "transaction_id": "TXN_4H3J2K1L",
+    "rule_id": "AML_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:19:16.413182Z",
+    "last_verified": "2026-02-06T15:19:16.413182Z"
+  },
+  {
+    "risk_flag_id": "RF_1001",
+    "transaction_id": "TXN_E5F6G7H8",
+    "rule_id": "AML_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:20:00.593902Z",
+    "last_verified": "2026-02-06T15:20:00.593902Z"
+  },
+  {
+    "risk_flag_id": "RF_1002",
+    "transaction_id": "TXN_M3N4O5P6",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:20:00.593902Z",
+    "last_verified": "2026-02-06T15:20:00.593902Z"
+  },
+  {
+    "risk_flag_id": "RF_1003",
+    "transaction_id": "TXN_O1P2Q3R4",
+    "rule_id": "AML_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:20:00.593902Z",
+    "last_verified": "2026-02-06T15:20:00.593902Z"
+  },
+  {
+    "risk_flag_id": "RF_0001",
+    "transaction_id": "TXN_C3D4E5F6",
+    "rule_id": "AML_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:20:36.285685Z",
+    "last_verified": "2026-02-06T15:20:36.285685Z"
+  },
+  {
+    "risk_flag_id": "RF_0002",
+    "transaction_id": "TXN_E5F6G7H8",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:20:36.285685Z",
+    "last_verified": "2026-02-06T15:20:36.285685Z"
+  },
+  {
+    "risk_flag_id": "RF_0003",
+    "transaction_id": "TXN_K1L2M3N4",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "notify",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:20:36.285685Z",
+    "last_verified": "2026-02-06T15:20:36.285685Z"
+  },
+  {
+    "risk_flag_id": "RF_8821",
+    "transaction_id": "TXN_I9J0K1L2",
+    "rule_id": "AML_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:21:10.598544Z",
+    "last_verified": "2026-02-06T15:21:10.598544Z"
+  },
+  {
+    "risk_flag_id": "RF_3342",
+    "transaction_id": "TXN_Q7R8S9T0",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:21:10.598544Z",
+    "last_verified": "2026-02-06T15:21:10.598544Z"
+  },
+  {
+    "risk_flag_id": "RF_1095",
+    "transaction_id": "TXN_G3H4I5J6",
+    "rule_id": "AML_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:21:10.598544Z",
+    "last_verified": "2026-02-06T15:21:10.598544Z"
+  },
+  {
+    "risk_flag_id": "RF_7701",
+    "transaction_id": "TXN_I9J0K1L2",
+    "rule_id": "AML_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:21:45.847218Z",
+    "last_verified": "2026-02-06T15:21:45.847218Z"
+  },
+  {
+    "risk_flag_id": "RF_7702",
+    "transaction_id": "TXN_Q7R8S9T0",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:21:45.847218Z",
+    "last_verified": "2026-02-06T15:21:45.847218Z"
+  },
+  {
+    "risk_flag_id": "RF_7703",
+    "transaction_id": "TXN_G3H4I5J6",
+    "rule_id": "AML_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:21:45.847218Z",
+    "last_verified": "2026-02-06T15:21:45.847218Z"
+  },
+  {
+    "risk_flag_id": "RF_0001",
+    "transaction_id": "TXN_E5F6G7H8",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:22:21.899713Z",
+    "last_verified": "2026-02-06T15:22:21.899713Z"
+  },
+  {
+    "risk_flag_id": "RF_0002",
+    "transaction_id": "TXN_H8I9J0K1",
+    "rule_id": "AML_412_01",
+    "flag_type": "manual_review",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:22:21.899713Z",
+    "last_verified": "2026-02-06T15:22:21.899713Z"
+  },
+  {
+    "risk_flag_id": "RF_0003",
+    "transaction_id": "TXN_M3N4O5P6",
+    "rule_id": "FRAUD_412_01",
+    "flag_type": "block",
+    "confidence": 1.0,
+    "source": "synthetic",
+    "created_at": "2026-02-06T15:22:21.899713Z",
+    "last_verified": "2026-02-06T15:22:21.899713Z"
   }
 ]

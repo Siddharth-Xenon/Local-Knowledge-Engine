@@ -1,31 +1,61 @@
 [
   {
-    "from": "AML_421",
+    "from": "AML_412_01",
+    "to": "RULE_AML_101",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RULE_AML_102",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "KYC_412_01",
+    "to": "RULE_KYC_201",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "KYC_412_01",
+    "to": "RULE_KYC_202",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RULE_FRAUD_301",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RULE_FRAUD_302",
+    "type": "CONTAINS_RULE"
+  },
+  {
+    "from": "AML_789_001",
     "to": "RULE_AML_001",
     "type": "CONTAINS_RULE"
   },
   {
-    "from": "AML_421",
+    "from": "AML_789_001",
     "to": "RULE_AML_002",
     "type": "CONTAINS_RULE"
   },
   {
-    "from": "KYC_421",
+    "from": "KYC_789_001",
     "to": "RULE_KYC_001",
     "type": "CONTAINS_RULE"
   },
   {
-    "from": "KYC_421",
+    "from": "KYC_789_001",
     "to": "RULE_KYC_002",
     "type": "CONTAINS_RULE"
   },
   {
-    "from": "FRAUD_421",
+    "from": "FRAUD_789_001",
     "to": "RULE_FRAUD_001",
     "type": "CONTAINS_RULE"
   },
   {
-    "from": "FRAUD_421",
+    "from": "FRAUD_789_001",
     "to": "RULE_FRAUD_002",
     "type": "CONTAINS_RULE"
   }

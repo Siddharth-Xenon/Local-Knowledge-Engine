@@ -1,92 +1,227 @@
 [
   {
-    "from": "AML_421",
-    "to": "RF_7721",
-    "type": "TRIGGERS"
-  },
-  {
-    "from": "FRAUD_421",
-    "to": "RF_8832",
-    "type": "TRIGGERS"
-  },
-  {
-    "from": "FRAUD_421",
-    "to": "RF_9943",
-    "type": "TRIGGERS"
-  },
-  {
-    "from": "AML_421",
+    "from": "AML_412_01",
     "to": "RF_1001",
     "type": "TRIGGERS"
   },
   {
-    "from": "FRAUD_421",
+    "from": "FRAUD_412_01",
     "to": "RF_1002",
     "type": "TRIGGERS"
   },
   {
-    "from": "AML_421",
+    "from": "FRAUD_412_01",
     "to": "RF_1003",
     "type": "TRIGGERS"
   },
   {
-    "from": "AML_421",
-    "to": "RF_1001",
-    "type": "TRIGGERS"
-  },
-  {
-    "from": "FRAUD_421",
-    "to": "RF_1002",
-    "type": "TRIGGERS"
-  },
-  {
-    "from": "FRAUD_421",
-    "to": "RF_1003",
-    "type": "TRIGGERS"
-  },
-  {
-    "from": "AML_421",
-    "to": "RF_8801",
-    "type": "TRIGGERS"
-  },
-  {
-    "from": "FRAUD_421",
-    "to": "RF_8802",
-    "type": "TRIGGERS"
-  },
-  {
-    "from": "AML_421",
-    "to": "RF_8803",
-    "type": "TRIGGERS"
-  },
-  {
-    "from": "RULE_HIGH_VAL",
+    "from": "AML_412_01",
     "to": "RF_0001",
     "type": "TRIGGERS"
   },
   {
-    "from": "RULE_INTL_XFER",
+    "from": "FRAUD_412_01",
     "to": "RF_0002",
     "type": "TRIGGERS"
   },
   {
-    "from": "RULE_FREQ_ANOMALY",
+    "from": "AML_412_01",
     "to": "RF_0003",
     "type": "TRIGGERS"
   },
   {
-    "from": "RULE_HIGH_VAL",
-    "to": "RF_A101",
+    "from": "AML_412_01",
+    "to": "RF_1001",
     "type": "TRIGGERS"
   },
   {
-    "from": "RULE_INTL_XFER",
-    "to": "RF_B202",
+    "from": "FRAUD_412_01",
+    "to": "RF_1002",
     "type": "TRIGGERS"
   },
   {
-    "from": "RULE_HIGH_DEP",
-    "to": "RF_C303",
+    "from": "FRAUD_412_01",
+    "to": "RF_1003",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_0001",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_0002",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_0003",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_1001",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_1002",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_1003",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_1001",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "KYC_412_01",
+    "to": "RF_1002",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_1003",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_9001",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_9002",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_9003",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_1001",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_1002",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_1003",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_7001",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_7002",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_7003",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_1001",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_1002",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_1003",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_1001",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_1002",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_1003",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_0001",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_0002",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_0003",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_8821",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_3342",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_1095",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_7701",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_7702",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_7703",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_0001",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "AML_412_01",
+    "to": "RF_0002",
+    "type": "TRIGGERS"
+  },
+  {
+    "from": "FRAUD_412_01",
+    "to": "RF_0003",
     "type": "TRIGGERS"
   }
 ]

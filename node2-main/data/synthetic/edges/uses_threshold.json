@@ -1,17 +1,37 @@
 [
   {
-    "from": "RULE_AML_001",
-    "to": "TH_001",
+    "from": "RULE_AML_101",
+    "to": "TH_AML_001",
     "type": "USES_THRESHOLD"
   },
   {
-    "from": "RULE_AML_002",
-    "to": "TH_002",
+    "from": "RULE_AML_102",
+    "to": "TH_AML_002",
+    "type": "USES_THRESHOLD"
+  },
+  {
+    "from": "RULE_FRAUD_301",
+    "to": "TH_FRAUD_001",
+    "type": "USES_THRESHOLD"
+  },
+  {
+    "from": "RULE_FRAUD_302",
+    "to": "TH_FRAUD_002",
+    "type": "USES_THRESHOLD"
+  },
+  {
+    "from": "RULE_AML_001",
+    "to": "TH_AML_001",
+    "type": "USES_THRESHOLD"
+  },
+  {
+    "from": "RULE_KYC_002",
+    "to": "TH_KYC_001",
     "type": "USES_THRESHOLD"
   },
   {
     "from": "RULE_FRAUD_001",
-    "to": "TH_003",
+    "to": "TH_FRD_001",
     "type": "USES_THRESHOLD"
   }
 ]

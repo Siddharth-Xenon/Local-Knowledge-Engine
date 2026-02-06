@@ -16,3 +16,4 @@ numpy>=1.26.0
 # Synthetic Data Generator
 google-genai>=1.0.0
 python-dotenv>=1.0.0
+sentence-transformers==5.2.2

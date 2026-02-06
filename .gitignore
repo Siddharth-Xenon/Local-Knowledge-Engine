@@ -47,3 +47,7 @@ Desktop.ini
 # .gemini/
 node2-main/data/
 node2-main/data
+node2-main/data/*
+
+*.json
+node2-main/venv/*

@@ -1,4 +1,5 @@
 import pytest
+
 from app.graph.connection import Neo4jConnection
 
 
