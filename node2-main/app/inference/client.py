@@ -9,12 +9,14 @@ from app.core import InferenceTimeoutError, InferenceUnavailableError
 
 class GenerateRequest(BaseModel):
     """Request to the inference server."""
+
     prompt: str = Field(..., min_length=1)
     model: str = Field(default="deepseek-r1:8b-llama-distill-q4_K_M")
 
 
 class GenerateResponse(BaseModel):
     """Response from the inference server."""
+
     response: str
     model: str
     done: bool = True
@@ -23,7 +25,7 @@ class GenerateResponse(BaseModel):
 class InferenceClient:
     """
     Client for communicating with Node 1 inference server.
-    
+
     Features:
     - Configurable timeout (default 60s)
     - Single retry on timeout
@@ -46,12 +48,12 @@ class InferenceClient:
     ) -> str:
         """
         Generate text using Node 1 inference server.
-        
+
         Args:
             prompt: The text prompt to generate from
             model: Optional model override
             retry: Whether to retry on timeout (default True)
-            
+
         Returns:
             Generated text response
         """

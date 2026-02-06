@@ -6,12 +6,12 @@ from pydantic import BaseModel
 from app.graph.repository import GraphRepository
 from app.inference.client import inference_client
 
-
 router = APIRouter(prefix="/health", tags=["health"])
 
 
 class HealthStatus(BaseModel):
     """Health check response."""
+
     status: str
     neo4j: str | None = None
     node1: str | None = None

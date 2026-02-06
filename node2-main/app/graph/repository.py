@@ -3,7 +3,6 @@
 from typing import Any
 from uuid import uuid4
 
-from app.core import GRAPH_OPERATION_TIMEOUT
 from app.graph.connection import get_session
 
 
@@ -17,7 +16,7 @@ class GraphRepository:
     ) -> str:
         """
         Create a node with the given label and properties.
-        
+
         Returns the node ID.
         """
         node_id = str(uuid4())
@@ -102,10 +101,7 @@ class GraphRepository:
 
             result = await session.run(query, **params)
             records = await result.data()
-            return [
-                {**dict(r["n"]), "_labels": r["labels"]}
-                for r in records
-            ]
+            return [{**dict(r["n"]), "_labels": r["labels"]} for r in records]
 
     @staticmethod
     async def health_check() -> bool:

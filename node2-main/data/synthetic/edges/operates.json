@@ -1,37 +1,57 @@
 [
   {
-    "from": "BANK_789",
-    "to": "ACC_102938",
+    "from": "BANK_421",
+    "to": "ACC_100293",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_421",
+    "to": "ACC_100294",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_421",
+    "to": "ACC_882101",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_421",
+    "to": "ACC_441091",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_421",
+    "to": "ACC_105521",
+    "type": "OPERATES"
+  },
+  {
+    "from": "BANK_421",
+    "to": "ACC_105522",
     "type": "OPERATES"
   },
   {
     "from": "BANK_789",
-    "to": "ACC_102939",
+    "to": "ACC_112233",
     "type": "OPERATES"
   },
   {
     "from": "BANK_789",
-    "to": "ACC_456281",
+    "to": "ACC_112234",
     "type": "OPERATES"
   },
   {
     "from": "BANK_789",
-    "to": "ACC_882736",
+    "to": "ACC_445566",
     "type": "OPERATES"
   },
   {
     "from": "BANK_789",
-    "to": "ACC_334219",
+    "to": "ACC_778899",
     "type": "OPERATES"
   },
   {
     "from": "BANK_789",
-    "to": "ACC_334220",
-    "type": "OPERATES"
-  },
-  {
-    "from": "BANK_789",
-    "to": "ACC_771822",
+    "to": "ACC_990011",
     "type": "OPERATES"
   }
 ]

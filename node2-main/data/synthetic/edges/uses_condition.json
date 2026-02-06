@@ -1,47 +1,17 @@
 [
   {
-    "from": "RULE_AML_002",
-    "to": "COND_AML_001",
-    "type": "USES_CONDITION"
-  },
-  {
     "from": "RULE_KYC_001",
-    "to": "COND_KYC_001",
+    "to": "COND_001",
     "type": "USES_CONDITION"
   },
   {
     "from": "RULE_KYC_002",
-    "to": "COND_KYC_002",
-    "type": "USES_CONDITION"
-  },
-  {
-    "from": "RULE_KYC_002",
-    "to": "COND_KYC_003",
+    "to": "COND_002",
     "type": "USES_CONDITION"
   },
   {
     "from": "RULE_FRAUD_002",
-    "to": "COND_FRD_001",
-    "type": "USES_CONDITION"
-  },
-  {
-    "from": "RULE_FRAUD_002",
-    "to": "COND_FRD_002",
-    "type": "USES_CONDITION"
-  },
-  {
-    "from": "RULE_KYC_001",
-    "to": "COND_KYC_001",
-    "type": "USES_CONDITION"
-  },
-  {
-    "from": "RULE_KYC_002",
-    "to": "COND_KYC_002",
-    "type": "USES_CONDITION"
-  },
-  {
-    "from": "RULE_FRD_002",
-    "to": "COND_FRD_001",
+    "to": "COND_003",
     "type": "USES_CONDITION"
   }
 ]

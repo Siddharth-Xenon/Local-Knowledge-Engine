@@ -26,5 +26,20 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
+    # Embedding Configuration
+    embedding_type: str = "mock"  # "mock" | "sentence-transformers"
+    embedding_model_name: str = "all-MiniLM-L6-v2"
+    embedding_dimension: int = 384
+
+    # Index Configuration
+    index_type: str = "memory"  # "memory" | "faiss"
+    index_path: str = "data/faiss.index"
+
+    # Retrieval Configuration
+    retriever_type: str = "hybrid"  # "graph" | "semantic" | "hybrid"
+    retrieval_max_nodes: int = 50
+    semantic_top_k: int = 10
+    graph_traversal_depth: int = 2
+
 
 settings = Settings()

@@ -1,9 +1,9 @@
 """Neo4j async connection manager."""
 
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
-from neo4j import AsyncGraphDatabase, AsyncDriver, AsyncSession
+from neo4j import AsyncDriver, AsyncGraphDatabase, AsyncSession
 
 from app.config import settings
 from app.core import GraphConnectionError
