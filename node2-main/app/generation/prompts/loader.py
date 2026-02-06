@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from app.core.exceptions import PromptNotFoundError
+from app.generation.exceptions import PromptNotFoundError
 
 
 class PromptLoader:
@@ -28,5 +28,5 @@ class PromptLoader:
                 f"Prompt template not found: {prompt_key} v{version}",
                 details={"path": str(path)},
             )
-        
+
         return path

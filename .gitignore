@@ -43,8 +43,10 @@ ehthumbs.db
 Desktop.ini
 
 # Agent
-# .agent/
-# .gemini/
+.agent/
+.gemini/
+plans/
+docs/
 node2-main/data/
 node2-main/data
 node2-main/data/*
