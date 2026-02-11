@@ -2,7 +2,6 @@
 
 from app.config import settings
 from app.embeddings.base import EmbeddingStrategy
-from app.index.base import VectorIndex
 from app.retrieval.base import Retriever
 from app.retrieval.strategies.graph import GraphRetriever
 from app.retrieval.strategies.hybrid import HybridRetriever
@@ -18,14 +17,12 @@ class RetrieverFactory:
     @staticmethod
     def create(
         embedding: EmbeddingStrategy | None = None,
-        index: VectorIndex | None = None,
         retriever_type: str | None = None,
     ) -> Retriever:
         """Create a retriever from config.
 
         Args:
             embedding: Required for semantic/hybrid retrievers.
-            index: Required for semantic/hybrid retrievers.
             retriever_type: Override config value.
                 Options: "graph", "semantic", "hybrid"
 
@@ -41,21 +38,20 @@ class RetrieverFactory:
             return GraphRetriever()
 
         elif type_name == "semantic":
-            if embedding is None or index is None:
+            if embedding is None:
                 raise ValueError(
-                    "Semantic retriever requires embedding and index. "
-                    "Pass embedding= and index= to create()."
+                    "Semantic retriever requires embedding. "
+                    "Pass embedding= to create()."
                 )
-            return SemanticRetriever(embedding=embedding, index=index)
+            return SemanticRetriever(embedding=embedding)
 
         elif type_name == "hybrid":
-            if embedding is None or index is None:
+            if embedding is None:
                 raise ValueError(
-                    "Hybrid retriever requires embedding and index. "
-                    "Pass embedding= and index= to create()."
+                    "Hybrid retriever requires embedding. Pass embedding= to create()."
                 )
             graph = GraphRetriever()
-            semantic = SemanticRetriever(embedding=embedding, index=index)
+            semantic = SemanticRetriever(embedding=embedding)
             return HybridRetriever(graph_retriever=graph, semantic_retriever=semantic)
 
         else:

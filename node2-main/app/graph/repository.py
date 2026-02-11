@@ -104,6 +104,28 @@ class GraphRepository:
             return [{**dict(r["n"]), "_labels": r["labels"]} for r in records]
 
     @staticmethod
+    async def get_embeddable_nodes(
+        labels: list[str],
+    ) -> list[dict[str, Any]]:
+        """Fetch nodes by label for embedding.
+
+        Returns node properties with _labels metadata.
+        """
+        if not labels:
+            return []
+
+        async with get_session() as session:
+            label_filter = " OR ".join(f"n:{lbl}" for lbl in labels)
+            query = f"""
+            MATCH (n)
+            WHERE {label_filter}
+            RETURN n, labels(n) AS labels
+            """
+            result = await session.run(query)
+            records = await result.data()
+            return [{**dict(r["n"]), "_labels": r["labels"]} for r in records]
+
+    @staticmethod
     async def health_check() -> bool:
         """Check if Neo4j is reachable."""
         try:

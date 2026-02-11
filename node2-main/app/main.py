@@ -3,7 +3,6 @@
 import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,7 +13,6 @@ from app.config import settings
 from app.core import KnowledgeEngineError
 from app.embeddings.factory import EmbeddingFactory
 from app.graph.connection import connect, disconnect
-from app.index.factory import IndexFactory
 from app.retrieval.context_packager import ContextPackager
 from app.retrieval.factory import RetrieverFactory
 from app.services.retrieval_service import RetrievalService
@@ -31,36 +29,24 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     await connect()
     logger.info("Connected to Neo4j")
 
-    # 2. Initialize embedding model (lazy loaded on first use)
+    # 2. Initialize embedding model
     embedding = EmbeddingFactory.create()
     logger.info(f"Embedding strategy: {settings.embedding_type}")
 
-    # 3. Initialize vector index
-    index = IndexFactory.create()
-
-    # 4. Load index from disk if exists
-    index_path = Path(settings.index_path)
-    if index_path.exists():
-        await index.load(str(index_path))
-        logger.info(f"Loaded index from {index_path} ({index.size} vectors)")
-    else:
-        logger.info("No existing index found, starting fresh")
-
-    # 5. Warm up embedding model (encode dummy text)
+    # 3. Warm up embedding model
     try:
         _ = await embedding.encode("warmup")
         logger.info("Embedding model warmed up")
     except Exception as e:
         logger.warning(f"Embedding warmup failed: {e}")
 
-    # 6. Create retriever and service
-    retriever = RetrieverFactory.create(embedding=embedding, index=index)
+    # 4. Create retriever and service (vectors live in Neo4j)
+    retriever = RetrieverFactory.create(embedding=embedding)
     packager = ContextPackager()
     service = RetrievalService(retriever=retriever, packager=packager)
 
-    # 7. Store in app state for dependency injection
+    # 5. Store in app state for dependency injection
     app.state.embedding = embedding
-    app.state.index = index
     app.state.retrieval_service = service
 
     logger.info("Retrieval system initialized")
@@ -68,16 +54,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     yield
 
     # === SHUTDOWN ===
-
-    # 1. Save index to disk
-    try:
-        index_path.parent.mkdir(parents=True, exist_ok=True)
-        await app.state.index.save(str(index_path))
-        logger.info(f"Saved index to {index_path}")
-    except Exception as e:
-        logger.error(f"Failed to save index: {e}")
-
-    # 2. Disconnect from Neo4j
     await disconnect()
     logger.info("Disconnected from Neo4j")
 
