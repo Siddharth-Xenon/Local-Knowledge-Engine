@@ -1,0 +1,67 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+from neo4j import GraphDatabase
+from neo4j_graphrag.llm import OpenAILLM, OllamaLLM
+from neo4j_graphrag.generation import GraphRAG
+from neo4j_graphrag.retrievers import Text2CypherRetriever
+
+from app.inference.llm_adapter import Node1LLM
+
+
+# Connect to Neo4j database
+driver = GraphDatabase.driver(
+    os.getenv("NEO4J_URI"),
+    auth=(os.getenv("NEO4J_USERNAME"), os.getenv("NEO4J_PASSWORD")),
+)
+
+# Create Cypher LLM
+t2c_llm = OpenAILLM(model_name="gpt-4o", model_params={"temperature": 0})
+
+# tag::examples[]
+# Cypher examples as input/query pairs
+examples = [
+    "USER INPUT: 'Get user ratings for a movie?' QUERY: MATCH (u:User)-[r:RATED]->(m:Movie) WHERE m.title = 'Movie Title' RETURN r.rating"
+]
+# end::examples[]
+
+# tag::retriever[]
+# Build the retriever
+retriever = Text2CypherRetriever(
+    driver=driver,
+    llm=t2c_llm,
+    examples=examples,
+)
+# end::retriever[]
+
+llm = Node1LLM()
+rag = GraphRAG(retriever=retriever, llm=llm)
+
+
+query_text = "What user gives the lowest ratings?"
+response = rag.search(query_text=query_text, return_context=True)
+print("QUERY: ", query_text)
+print(response.answer)
+print("\n\nCYPHER :", response.retriever_result.metadata["cypher"])
+print("CONTEXT:", response.retriever_result.items)
+
+
+query_text = "What is the averaging user rating for the movie Toy Story?"
+response = rag.search(query_text=query_text, return_context=True)
+print("QUERY: ", query_text)
+print(response.answer)
+print("\n\nCYPHER :", response.retriever_result.metadata["cypher"])
+print("CONTEXT:", response.retriever_result.items)
+
+
+query_text = "What is the highest rating for Goodfellas?"
+response = rag.search(query_text=query_text, return_context=True)
+print("QUERY: ", query_text)
+
+print(response.answer)
+print("\n\nCYPHER :", response.retriever_result.metadata["cypher"])
+print("CONTEXT:", response.retriever_result.items)
+
+driver.close()

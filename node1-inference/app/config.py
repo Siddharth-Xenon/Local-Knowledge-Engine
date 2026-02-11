@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     # Ollama Configuration
     ollama_url: str = "http://localhost:11434"
     default_model: str = "deepseek-r1:8b-llama-distill-q4_K_M"
+    ollama_path: str = "ollama"
+    ollama_start_timeout: int = 30
 
     # Server Configuration
     host: str = "0.0.0.0"

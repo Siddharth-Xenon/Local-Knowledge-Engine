@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     # Node 1 Inference Server (RTX 2060 machine)
     # Easy to update: just change this when network changes
-    node1_url: str = "http://192.168.0.103:8001"
+    node1_url: str = "http://0.0.0.0:8001"
     inference_timeout: int = 60
 
     # Server Configuration

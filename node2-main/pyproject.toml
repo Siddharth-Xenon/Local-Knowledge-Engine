@@ -34,3 +34,10 @@ select = ["E", "F", "I", "UP"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+markers = [
+    "integration: tests requiring a live Node 1 server",
+]
+addopts = "-m 'not integration'"

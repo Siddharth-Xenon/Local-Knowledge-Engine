@@ -61,6 +61,9 @@ class GenerationService:
                     "done": data.get("done", True),
                 }
 
+        except httpx.HTTPStatusError as e:
+            error_msg = f"Ollama error {e.response.status_code}: {e.response.text}"
+            raise Node1Error(error_msg)
         except httpx.TimeoutException:
             raise Node1Error("Ollama request timed out")
         except httpx.RequestError as e:
