@@ -7,7 +7,7 @@ import argparse
 import asyncio
 import sys
 
-from app.embeddings.implementations.sentence_transformers import STEmbedding
+from neo4j_graphrag.embeddings import SentenceTransformerEmbeddings
 from app.graph.connection import Neo4jConnection
 from app.graph.repository import GraphRepository
 from app.testing.embedding_suite.reporting import Reporter
@@ -47,7 +47,7 @@ async def main():
         # Start with default SentenceTransformer as per plan
         print("[*] Initializing Embedding Model...")
         try:
-            model = STEmbedding()
+            model = SentenceTransformerEmbeddings()
         except Exception as e:
             print(f"[!] Model initialization failed: {e}")
             sys.exit(1)

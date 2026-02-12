@@ -11,6 +11,10 @@ numpy>=1.26.0
 neo4j==5.28.1
 neo4j-graphrag[openai]==1.7.0
 
+# LangChain / LangGraph (Phase 1.5+)
+langchain-core>=0.3
+langgraph>=0.2
+
 # Optional: Uncomment for production
 # faiss-cpu>=1.8.0
 # sentence-transformers>=2.3.0

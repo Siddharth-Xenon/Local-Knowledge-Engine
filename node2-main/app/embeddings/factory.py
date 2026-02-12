@@ -1,39 +1,25 @@
-"""Factory for creating embedding strategies from configuration."""
+"""Factory for creating neo4j-graphrag compatible embedders."""
+
+from neo4j_graphrag.embeddings import SentenceTransformerEmbeddings
 
 from app.config import settings
-from app.embeddings.base import EmbeddingStrategy
-from app.embeddings.implementations.mock import MockEmbedding
-from app.embeddings.implementations.sentence_transformers import STEmbedding
 
 
 class EmbeddingFactory:
-    """Factory for creating embedding strategies.
-
-    Reads embedding_type from config and returns appropriate implementation.
-    """
+    """Factory for creating embedders compatible with neo4j-graphrag retrievers."""
 
     @staticmethod
-    def create(embedding_type: str | None = None) -> EmbeddingStrategy:
-        """Create an embedding strategy from config.
+    def create(
+        model_name: str | None = None,
+    ) -> SentenceTransformerEmbeddings:
+        """Create a SentenceTransformer embedder.
 
         Args:
-            embedding_type: Override config value.
-                Options: "mock", "sentence-transformers"
+            model_name: Override config value.
 
         Returns:
-            EmbeddingStrategy implementation.
-
-        Raises:
-            ValueError: If embedding type is unknown.
+            SentenceTransformerEmbeddings instance compatible with neo4j-graphrag.
         """
-        type_name = embedding_type or settings.embedding_type
-
-        if type_name == "mock":
-            return MockEmbedding()
-        elif type_name == "sentence-transformers":
-            return STEmbedding()
-        else:
-            raise ValueError(
-                f"Unknown embedding type: {type_name}. "
-                f"Options: 'mock', 'sentence-transformers'"
-            )
+        return SentenceTransformerEmbeddings(
+            model=model_name or settings.embedding_model_name,
+        )

@@ -13,10 +13,6 @@ class QueryRequest(BaseModel):
     """Request model for query endpoint."""
 
     query: str = Field(description="User's question or search query")
-    entity_ids: list[str] | None = Field(
-        default=None,
-        description="Optional pre-extracted entity IDs for graph traversal",
-    )
 
 
 class QueryResponse(BaseModel):
@@ -49,15 +45,12 @@ async def query(
     """Query the knowledge base for relevant evidence.
 
     This endpoint:
-    1. Retrieves evidence from graph + semantic sources
+    1. Retrieves evidence via neo4j-graphrag retrievers
     2. Packages evidence into LLM-consumable format
     3. Returns structured context with evidence IDs for tracing
 
     **Phase 3:** Will be extended to call Node 1 for LLM generation.
     **Phase 4:** Will add claim verification before returning.
     """
-    context = await service.retrieve_and_package(
-        query=request.query,
-        entity_ids=request.entity_ids,
-    )
+    context = service.retrieve_and_package(query=request.query)
     return QueryResponse(context=context)

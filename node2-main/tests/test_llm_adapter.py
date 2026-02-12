@@ -1,4 +1,4 @@
-"""Unit tests for Node1LLM adapter."""
+"""Unit tests for Node1LLM and Node1ChatModel adapters."""
 
 import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from neo4j_graphrag.exceptions import LLMGenerationError
 from neo4j_graphrag.llm.types import LLMResponse
 
-from app.inference.llm_adapter import Node1LLM
+from app.inference.llm_adapter import Node1LLM, Node1ChatModel, _flatten_messages
 from app.core import InferenceTimeoutError, InferenceUnavailableError
 
 
@@ -17,6 +17,19 @@ def llm():
         mock_settings.node1_url = "http://test-node1:8001"
         mock_settings.inference_timeout = 10
         yield Node1LLM(
+            model_name="test-model",
+            base_url="http://test-node1:8001",
+            timeout=10,
+        )
+
+
+@pytest.fixture
+def chat_model():
+    """Node1ChatModel with test defaults."""
+    with patch("app.inference.llm_adapter.settings") as mock_settings:
+        mock_settings.node1_url = "http://test-node1:8001"
+        mock_settings.inference_timeout = 10
+        yield Node1ChatModel(
             model_name="test-model",
             base_url="http://test-node1:8001",
             timeout=10,
@@ -60,7 +73,31 @@ class TestBuildPrompt:
         assert parts[2] == "[User]\nMy question"
 
 
-# --- Sync invoke ---
+# --- Flatten messages (LangChain) ---
+
+
+class TestFlattenMessages:
+    def test_single_human(self):
+        from langchain_core.messages import HumanMessage
+
+        result = _flatten_messages([HumanMessage(content="Hello")])
+        assert result == "[Human]\nHello"
+
+    def test_mixed_messages(self):
+        from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+
+        msgs = [
+            SystemMessage(content="Be brief."),
+            HumanMessage(content="What is 1+1?"),
+            AIMessage(content="2"),
+        ]
+        result = _flatten_messages(msgs)
+        assert "[System]\nBe brief." in result
+        assert "[Human]\nWhat is 1+1?" in result
+        assert "[Ai]\n2" in result
+
+
+# --- Sync invoke (Node1LLM) ---
 
 
 class TestInvokeSync:
@@ -98,7 +135,7 @@ class TestInvokeSync:
                 llm.invoke("slow query")
 
 
-# --- Async ainvoke ---
+# --- Async ainvoke (Node1LLM) ---
 
 
 class TestAinvokeAsync:
@@ -131,6 +168,54 @@ class TestAinvokeAsync:
 
         with pytest.raises(LLMGenerationError):
             await llm.ainvoke("any query")
+
+
+# --- Node1ChatModel ---
+
+
+class TestNode1ChatModel:
+    def test_llm_type(self, chat_model):
+        assert chat_model._llm_type == "node1-local"
+
+    def test_generate_success(self, chat_model):
+        from langchain_core.messages import HumanMessage
+        from langchain_core.outputs import ChatResult
+
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "response": "Hello from Node 1",
+            "model": "test",
+            "done": True,
+        }
+        mock_response.raise_for_status = MagicMock()
+
+        with patch("app.inference.llm_adapter.httpx.Client") as MockClient:
+            MockClient.return_value.__enter__ = MagicMock(return_value=MagicMock())
+            MockClient.return_value.__enter__.return_value.post.return_value = (
+                mock_response
+            )
+            MockClient.return_value.__exit__ = MagicMock(return_value=False)
+
+            result = chat_model._generate([HumanMessage(content="Hi")])
+
+        assert isinstance(result, ChatResult)
+        assert len(result.generations) == 1
+        assert result.generations[0].message.content == "Hello from Node 1"
+
+    @pytest.mark.asyncio
+    async def test_agenerate_success(self, chat_model):
+        from langchain_core.messages import HumanMessage
+        from langchain_core.outputs import ChatResult
+
+        with patch("app.inference.llm_adapter.InferenceClient") as MockClient:
+            mock_instance = MagicMock()
+            mock_instance.generate = AsyncMock(return_value="Async hello")
+            MockClient.return_value = mock_instance
+
+            result = await chat_model._agenerate([HumanMessage(content="Hi")])
+
+        assert isinstance(result, ChatResult)
+        assert result.generations[0].message.content == "Async hello"
 
 
 # --- Integration (real Node 1 connection) ---

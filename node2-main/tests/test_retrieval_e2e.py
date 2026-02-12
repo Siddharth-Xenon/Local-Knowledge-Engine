@@ -1,141 +1,92 @@
-"""End-to-end integration tests for retrieval system."""
+"""Tests for RetrievalService with library retrievers."""
 
 import pytest
-from app.api.routes.query import QueryRequest
-from app.embeddings.factory import EmbeddingFactory
-from app.graph.connection import Neo4jConnection
-from app.graph.repository import GraphRepository
-from app.index.factory import IndexFactory
-from app.main import app
-from app.retrieval.factory import RetrieverFactory
+from unittest.mock import MagicMock
+
+from app.retrieval.models import EvidenceSet, StructuredContext
 from app.services.retrieval_service import RetrievalService
-from fastapi.testclient import TestClient
 
 
-@pytest.fixture
-def client():
-    """FastAPI test client."""
-    return TestClient(app)
+class MockRetrieverResultItem:
+    """Mock for neo4j_graphrag RetrieverResultItem."""
+
+    def __init__(self, content: str, metadata: dict | None = None):
+        self.content = content
+        self.metadata = metadata or {}
 
 
-@pytest.fixture
-async def setup_neo4j():
-    """Setup and teardown Neo4j connection."""
-    await Neo4jConnection.connect()
-    yield
-    await Neo4jConnection.disconnect()
+class MockRetrieverResult:
+    """Mock for neo4j_graphrag RetrieverResult."""
+
+    def __init__(self, items: list[MockRetrieverResultItem]):
+        self.items = items
 
 
-@pytest.mark.asyncio
-async def test_graph_retrieval_e2e(setup_neo4j):
-    """Test graph retrieval via service."""
-    # 1. Create a test node in Neo4j
-    node_id = await GraphRepository.create_node(
-        "Policy", {"name": "Test Policy", "content": "This is a test policy content."}
-    )
+def _make_mock_retriever(items: list[MockRetrieverResultItem]):
+    """Create a mock retriever with predictable results."""
+    mock = MagicMock()
+    mock.search.return_value = MockRetrieverResult(items=items)
+    return mock
 
-    try:
-        # 2. Setup service (using mock embedding/memory index for speed)
-        embedding = EmbeddingFactory.create("mock")
-        index = IndexFactory.create("memory")
-        retriever = RetrieverFactory.create(
-            embedding=embedding,
-            index=index,
-            retriever_type="graph",
-        )
+
+class TestRetrievalService:
+    def test_retrieve_converts_to_evidence_set(self):
+        items = [
+            MockRetrieverResultItem(
+                content="High-value transaction rule",
+                metadata={"node_id": "rule_1", "node_type": "Rule", "score": 0.95},
+            ),
+            MockRetrieverResultItem(
+                content="AML Policy v2",
+                metadata={"node_id": "policy_1", "node_type": "Policy", "score": 0.87},
+            ),
+        ]
+        retriever = _make_mock_retriever(items)
         service = RetrievalService(retriever=retriever)
 
-        # 3. Retrieve using entity ID
-        result = await service.retrieve_and_package(
-            query="irrelevant",  # Graph retrieval follows links irrespective of query
-            entity_ids=[node_id],
-        )
+        result = service.retrieve("fraud detection")
 
-        # 4. Verify
-        # Note: GraphRetriever currently traverses *neighbors*.
-        # If we start at node_id, does it return the node itself?
-        # The Cypher query in graph.py returns `COALESCE(related, start)`.
-        # So it should return the start node if it meets criteria.
+        assert isinstance(result, EvidenceSet)
+        assert len(result.nodes) == 2
+        assert result.nodes[0].node_id == "rule_1"
+        assert result.nodes[0].content == "High-value transaction rule"
+        assert result.nodes[1].node_id == "policy_1"
 
-        assert len(result.evidence_ids) > 0
-        assert node_id in result.sources
-        assert "Test Policy" in result.formatted
-
-    finally:
-        # Cleanup could be added here if we had a delete method
-        pass
-
-
-@pytest.mark.asyncio
-async def test_semantic_retrieval_e2e(setup_neo4j):
-    """Test semantic retrieval via service."""
-    # 1. Create a test node
-    node_id = await GraphRepository.create_node(
-        "Rule",
-        {"name": "Test Rule", "content": "Special rule for high value transactions."},
-    )
-
-    try:
-        # 2. Setup service and POPULATE index
-        embedding = EmbeddingFactory.create("mock")
-        index = IndexFactory.create("memory")
-
-        # Add vector to index
-        vector = await embedding.encode("Special rule for high value transactions.")
-        await index.add(node_id, vector)
-
-        retriever = RetrieverFactory.create(
-            embedding=embedding,
-            index=index,
-            retriever_type="semantic",
-        )
+    def test_retrieve_and_package_returns_structured_context(self):
+        items = [
+            MockRetrieverResultItem(
+                content="Test content",
+                metadata={"node_id": "n1", "node_type": "Rule", "score": 0.9},
+            ),
+        ]
+        retriever = _make_mock_retriever(items)
         service = RetrievalService(retriever=retriever)
 
-        # 3. Retrieve using query matches content
-        result = await service.retrieve_and_package(
-            query="high value transactions",
-        )
+        result = service.retrieve_and_package("test query")
 
-        # 4. Verify
-        assert len(result.evidence_ids) > 0
-        assert node_id in result.sources
-        assert "Test Rule" in result.formatted
+        assert isinstance(result, StructuredContext)
+        assert "E1:" in result.formatted
+        assert "Test content" in result.formatted
+        assert len(result.evidence_ids) == 1
 
-    finally:
-        pass
+    def test_empty_results(self):
+        retriever = _make_mock_retriever([])
+        service = RetrievalService(retriever=retriever)
 
+        result = service.retrieve("empty query")
 
-@pytest.mark.asyncio
-async def test_api_query_endpoint(client, setup_neo4j):
-    """Test the /query API endpoint."""
-    # Note: The API uses app.state which is initialized in lifespan.
-    # TestClient with lifespan context manager handles this.
+        assert isinstance(result, EvidenceSet)
+        assert len(result.nodes) == 0
 
-    with TestClient(app) as local_client:
-        # 1. Create data (we need to populate the app's index)
-        # Access the index from app state
-        index = app.state.index
-        embedding = app.state.embedding
+    def test_items_without_metadata(self):
+        items = [
+            MockRetrieverResultItem(content="Some content"),
+        ]
+        retriever = _make_mock_retriever(items)
+        service = RetrievalService(retriever=retriever)
 
-        # Create node
-        node_id = await GraphRepository.create_node(
-            "Account",
-            {"name": "Savings Account", "content": "Standard savings account details."},
-        )
+        result = service.retrieve("query")
 
-        # Add to index
-        vec = await embedding.encode("Standard savings account details.")
-        await index.add(node_id, vec)
-
-        # 2. Call API
-        response = local_client.post(
-            "/query", json={"query": "savings account details"}
-        )
-
-        # 3. Verify
-        assert response.status_code == 200
-        data = response.json()
-        context = data["context"]
-
-        assert len(context["evidence_ids"]) > 0
-        assert "Savings Account" in context["formatted"]
+        assert result.nodes[0].node_id == "n0"
+        assert result.nodes[0].node_type == "Unknown"
+        assert result.nodes[0].content == "Some content"

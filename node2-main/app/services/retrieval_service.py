@@ -1,72 +1,86 @@
-"""Retrieval service - orchestrates the full retrieval pipeline."""
+"""Retrieval service — orchestrates retrieval + context packaging.
 
-from app.retrieval.base import Retriever
+Adapts neo4j-graphrag RetrieverResult into internal EvidenceSet/StructuredContext.
+"""
+
+from __future__ import annotations
+
+import logging
+from typing import TYPE_CHECKING
+
 from app.retrieval.context_packager import ContextPackager
-from app.retrieval.models import EvidenceSet, StructuredContext
+from app.retrieval.models import EvidenceSet, NodeResult, StructuredContext
+
+if TYPE_CHECKING:
+    from neo4j_graphrag.retrievers import (
+        HybridCypherRetriever,
+        Text2CypherRetriever,
+        VectorCypherRetriever,
+    )
+
+logger = logging.getLogger(__name__)
+
+# Type alias
+Retriever = "VectorCypherRetriever | Text2CypherRetriever | HybridCypherRetriever"
 
 
 class RetrievalService:
     """High-level orchestrator for the retrieval pipeline.
 
-    Composes retriever + packager for end-to-end query handling.
-    Ready for Phase 4 extension with verification service.
+    Bridges neo4j-graphrag retrievers with internal ContextPackager.
     """
 
     def __init__(
         self,
-        retriever: Retriever,
+        retriever: VectorCypherRetriever | Text2CypherRetriever | HybridCypherRetriever,
         packager: ContextPackager | None = None,
-    ):
-        """Initialize retrieval service.
-
-        Args:
-            retriever: Retriever implementation (graph, semantic, or hybrid).
-            packager: Optional context packager. Creates default if not provided.
-        """
+    ) -> None:
         self._retriever = retriever
         self._packager = packager or ContextPackager()
 
-    async def retrieve(
-        self,
-        query: str,
-        entity_ids: list[str] | None = None,
-        max_nodes: int | None = None,
-    ) -> EvidenceSet:
-        """Retrieve evidence without packaging.
+    def retrieve(self, query: str, top_k: int = 10) -> EvidenceSet:
+        """Retrieve evidence synchronously and convert to EvidenceSet."""
+        result = self._retriever.search(query_text=query, top_k=top_k)
+        return self._to_evidence_set(query, result)
 
-        Args:
-            query: User's question.
-            entity_ids: Optional pre-extracted entity IDs.
-            max_nodes: Maximum nodes to retrieve.
+    async def aretrieve(self, query: str, top_k: int = 10) -> EvidenceSet:
+        """Retrieve evidence asynchronously and convert to EvidenceSet."""
+        result = await self._retriever.async_search(query_text=query, top_k=top_k)
+        return self._to_evidence_set(query, result)
 
-        Returns:
-            Raw EvidenceSet from retriever.
-        """
-        return await self._retriever.retrieve(
-            query=query,
-            entity_ids=entity_ids,
-            max_nodes=max_nodes,
-        )
-
-    async def retrieve_and_package(
-        self,
-        query: str,
-        entity_ids: list[str] | None = None,
-        max_nodes: int | None = None,
+    def retrieve_and_package(
+        self, query: str, top_k: int = 10, **kwargs
     ) -> StructuredContext:
-        """Retrieve evidence and package for LLM consumption.
-
-        Args:
-            query: User's question.
-            entity_ids: Optional pre-extracted entity IDs.
-            max_nodes: Maximum nodes to retrieve.
-
-        Returns:
-            StructuredContext ready for LLM.
-        """
-        evidence = await self.retrieve(
-            query=query,
-            entity_ids=entity_ids,
-            max_nodes=max_nodes,
-        )
+        """Retrieve + package for LLM consumption (sync)."""
+        evidence = self.retrieve(query, top_k=top_k)
         return self._packager.package(evidence)
+
+    async def aretrieve_and_package(
+        self, query: str, top_k: int = 10, **kwargs
+    ) -> StructuredContext:
+        """Retrieve + package for LLM consumption (async)."""
+        evidence = await self.aretrieve(query, top_k=top_k)
+        return self._packager.package(evidence)
+
+    @staticmethod
+    def _to_evidence_set(query: str, result) -> EvidenceSet:
+        """Convert neo4j-graphrag RetrieverResult to internal EvidenceSet."""
+        nodes: list[NodeResult] = []
+        for item in result.items:
+            content = item.content if hasattr(item, "content") else str(item)
+            metadata = item.metadata if hasattr(item, "metadata") else {}
+            nodes.append(
+                NodeResult(
+                    node_id=metadata.get("node_id", f"n{len(nodes)}"),
+                    content=content,
+                    node_type=metadata.get("node_type", "Unknown"),
+                    score=metadata.get("score", 0.0),
+                    source="library",
+                )
+            )
+        return EvidenceSet(
+            nodes=nodes,
+            query=query,
+            graph_count=0,
+            semantic_count=len(nodes),
+        )

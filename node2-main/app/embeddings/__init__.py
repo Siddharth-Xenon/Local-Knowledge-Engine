@@ -1,6 +1,5 @@
-"""Embeddings module."""
+"""Embedding module — neo4j-graphrag SentenceTransformer embedders."""
 
-from app.embeddings.base import EmbeddingStrategy
 from app.embeddings.factory import EmbeddingFactory
 
-__all__ = ["EmbeddingStrategy", "EmbeddingFactory"]
+__all__ = ["EmbeddingFactory"]

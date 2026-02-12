@@ -4,6 +4,7 @@ import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
+import neo4j
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -25,28 +26,37 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan handler for startup/shutdown."""
     # === STARTUP ===
 
-    # 1. Connect to Neo4j
+    # 1. Connect to Neo4j (async driver for existing graph operations)
     await connect()
-    logger.info("Connected to Neo4j")
+    logger.info("Connected to Neo4j (async)")
 
-    # 2. Initialize embedding model
-    embedding = EmbeddingFactory.create()
-    logger.info(f"Embedding strategy: {settings.embedding_type}")
+    # 2. Create sync Neo4j driver for library retrievers
+    driver = neo4j.GraphDatabase.driver(
+        settings.neo4j_uri,
+        auth=(settings.neo4j_user, settings.neo4j_password),
+    )
+    driver.verify_connectivity()
+    logger.info("Connected to Neo4j (sync driver for retrievers)")
 
-    # 3. Warm up embedding model
-    try:
-        _ = await embedding.encode("warmup")
-        logger.info("Embedding model warmed up")
-    except Exception as e:
-        logger.warning(f"Embedding warmup failed: {e}")
+    # 3. Create embedder (neo4j-graphrag SentenceTransformerEmbeddings)
+    embedder = EmbeddingFactory.create()
+    logger.info(f"Embedder: {settings.embedding_model_name}")
 
-    # 4. Create retriever and service (vectors live in Neo4j)
-    retriever = RetrieverFactory.create(embedding=embedding)
+    # 4. Create retriever from config
+    retriever = RetrieverFactory.create(
+        driver=driver,
+        embedder=embedder,
+        retriever_type=settings.retriever_type,
+    )
+    logger.info(f"Retriever: {settings.retriever_type}")
+
+    # 5. Create service
     packager = ContextPackager()
     service = RetrievalService(retriever=retriever, packager=packager)
 
-    # 5. Store in app state for dependency injection
-    app.state.embedding = embedding
+    # 6. Store in app state for dependency injection
+    app.state.driver = driver
+    app.state.embedder = embedder
     app.state.retrieval_service = service
 
     logger.info("Retrieval system initialized")
@@ -54,14 +64,16 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     yield
 
     # === SHUTDOWN ===
+    driver.close()
+    logger.info("Closed sync Neo4j driver")
     await disconnect()
-    logger.info("Disconnected from Neo4j")
+    logger.info("Disconnected from Neo4j (async)")
 
 
 app = FastAPI(
     title="Node 2 - Knowledge Engine",
     description="Main application for Local Knowledge Engine (GTX 1660)",
-    version="0.2.0",
+    version="0.3.0",
     lifespan=lifespan,
 )
 
@@ -103,7 +115,7 @@ async def root() -> dict[str, str]:
     return {
         "message": "Node 2 Knowledge Engine",
         "status": "running",
-        "version": "0.2.0",
+        "version": "0.3.0",
     }
 
 
