@@ -45,7 +45,7 @@ class RetrievalService:
 
     async def aretrieve(self, query: str, top_k: int = 10) -> EvidenceSet:
         """Retrieve evidence asynchronously and convert to EvidenceSet."""
-        result = await self._retriever.async_search(query_text=query, top_k=top_k)
+        result = self._retriever.search(query_text=query, top_k=top_k)
         return self._to_evidence_set(query, result)
 
     def retrieve_and_package(
@@ -67,8 +67,8 @@ class RetrievalService:
         """Convert neo4j-graphrag RetrieverResult to internal EvidenceSet."""
         nodes: list[NodeResult] = []
         for item in result.items:
-            content = item.content if hasattr(item, "content") else str(item)
-            metadata = item.metadata if hasattr(item, "metadata") else {}
+            content = getattr(item, "content", None) or str(item)
+            metadata = getattr(item, "metadata", None) or {}
             nodes.append(
                 NodeResult(
                     node_id=metadata.get("node_id", f"n{len(nodes)}"),

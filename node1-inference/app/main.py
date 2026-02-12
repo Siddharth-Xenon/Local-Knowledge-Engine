@@ -2,9 +2,9 @@
 
 import asyncio
 import logging
+import shutil
 import subprocess
 import time
-import shutil
 from contextlib import asynccontextmanager
 
 import httpx
@@ -73,30 +73,25 @@ async def ensure_ollama_service() -> subprocess.Popen | None:
         return None
 
 
-async def ensure_model_ready(model_name: str) -> None:
+async def ensure_model_pulled(model_name: str) -> None:
     """
-    Ensure the specified model is pulled and loaded.
-    1. Check if installed.
-    2. Pull if missing.
-    3. Preload into memory.
+    Ensure the specified model is downloaded locally.
+    This blocks startup — the model must exist before we can serve.
     """
     try:
         async with httpx.AsyncClient(timeout=300.0) as client:
-            # 1. Check availability
             resp = await client.get(f"{settings.ollama_url}/api/tags")
             if resp.status_code == 200:
                 models = [m["name"] for m in resp.json().get("models", [])]
-                # Check for exact match or :latest
                 if model_name not in models and f"{model_name}:latest" not in models:
                     logger.info(
                         f"📥 Model '{model_name}' not found locally. Pulling... "
                         "(this may take a while)"
                     )
-                    # 2. Pull Model
                     pull_resp = await client.post(
                         f"{settings.ollama_url}/api/pull",
                         json={"model": model_name, "stream": False},
-                        timeout=None,  # Blocking call for download
+                        timeout=None,
                     )
                     pull_resp.raise_for_status()
                     logger.info(f"✅ Model '{model_name}' pulled successfully.")
@@ -104,25 +99,48 @@ async def ensure_model_ready(model_name: str) -> None:
                     logger.info(
                         f"📦 Model '{model_name}' found locally. Skipping download."
                     )
-
-            # 3. Preload via CLI (to ensure visibility in 'ollama ps')
-            logger.info(f"🔥 Preloading model '{model_name}' via CLI...")
-            # Using ollama run with empty input sends one request and exits,
-            # but Ollama keeps the model in memory for 5 mins.
-            subprocess.run(
-                [settings.ollama_path, "run", model_name, ""],
-                capture_output=True,
-                text=True,
-                check=False,
-                encoding="utf-8",
-                errors="replace",
-            )
-            logger.info(f"✅ Model '{model_name}' signaled to load.")
-
-    except httpx.ReadTimeout:
-        logger.warning(f"⚠️ Preloading '{model_name}' timed out, but likely started.")
     except Exception as e:
-        logger.warning(f"❌ Failed to ensure model availability: {e}")
+        logger.warning(f"❌ Failed to check/pull model: {e}")
+
+
+async def _warm_model_background(model_name: str) -> None:
+    """
+    Warm-load the model into VRAM in the background.
+    Uses Ollama API so it doesn't block the event loop.
+    Retries on connection drops (common during heavy VRAM loads).
+    """
+    max_retries = 3
+    for attempt in range(1, max_retries + 1):
+        try:
+            logger.info(
+                f"🔥 Loading model '{model_name}' into VRAM "
+                f"(attempt {attempt}/{max_retries})..."
+            )
+            async with httpx.AsyncClient() as client:
+                await client.post(
+                    f"{settings.ollama_url}/api/generate",
+                    json={
+                        "model": model_name,
+                        "prompt": "hi",
+                        "keep_alive": "10m",
+                        "stream": False,
+                    },
+                    timeout=httpx.Timeout(
+                        connect=10.0, read=300.0, write=10.0, pool=10.0
+                    ),
+                )
+            logger.info(
+                f"✅ Model '{model_name}' loaded into VRAM and visible in 'ollama ps'."
+            )
+            return
+        except Exception as e:
+            logger.warning(f"⚠️ Warm-up attempt {attempt} failed: {e}")
+            if attempt < max_retries:
+                await asyncio.sleep(5 * attempt)  # backoff: 5s, 10s
+    logger.warning(
+        f"❌ Could not warm-load '{model_name}' after {max_retries} attempts. "
+        "It will load on first request instead."
+    )
 
 
 @asynccontextmanager
@@ -133,12 +151,17 @@ async def lifespan(app: FastAPI):
     # 1. Start Service
     ollama_process = await ensure_ollama_service()
 
-    # 2. Prepare Model
-    await ensure_model_ready(settings.default_model)
+    # 2. Ensure model is downloaded (blocks startup)
+    await ensure_model_pulled(settings.default_model)
+
+    # 3. Warm-load model into VRAM (fire-and-forget, server starts immediately)
+    warmup_task = asyncio.create_task(_warm_model_background(settings.default_model))
 
     yield
 
-    # 3. Cleanup
+    # 4. Cleanup
+    if not warmup_task.done():
+        warmup_task.cancel()
     if ollama_process:
         logger.info("🛑 Stopping Ollama subprocess...")
         ollama_process.terminate()

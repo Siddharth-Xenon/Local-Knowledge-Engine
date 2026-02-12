@@ -14,9 +14,17 @@ from app.config import settings
 from app.core import KnowledgeEngineError
 from app.embeddings.factory import EmbeddingFactory
 from app.graph.connection import connect, disconnect
+from app.inference.llm_adapter import Node1ChatModel
+from app.pipeline.graph import build_pipeline
+from app.pipeline.nodes import PipelineNodes
 from app.retrieval.context_packager import ContextPackager
 from app.retrieval.factory import RetrieverFactory
+from app.services.query_service import QueryService
 from app.services.retrieval_service import RetrievalService
+from app.verification.claim_extractor import ClaimExtractor
+from app.verification.graph_verifier import GraphVerifier
+from app.verification.semantic_verifier import SemanticVerifier
+from app.verification.verifier import Verifier
 
 logger = logging.getLogger(__name__)
 
@@ -50,16 +58,36 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     )
     logger.info(f"Retriever: {settings.retriever_type}")
 
-    # 5. Create service
+    # 5. Create retrieval service
     packager = ContextPackager()
-    service = RetrievalService(retriever=retriever, packager=packager)
+    retrieval_service = RetrievalService(retriever=retriever, packager=packager)
 
-    # 6. Store in app state for dependency injection
+    # 6. Create verification pipeline
+    llm = Node1ChatModel()
+    claim_extractor = ClaimExtractor(llm=llm)
+    graph_verifier = GraphVerifier(driver=driver)
+    semantic_verifier = SemanticVerifier(embedder=embedder)
+    verifier = Verifier(
+        graph_verifier=graph_verifier,
+        semantic_verifier=semantic_verifier,
+    )
+
+    nodes = PipelineNodes(
+        retrieval_service=retrieval_service,
+        llm=llm,
+        claim_extractor=claim_extractor,
+        verifier=verifier,
+    )
+    pipeline = build_pipeline(nodes)
+    query_service = QueryService(pipeline)
+
+    # 7. Store in app state for dependency injection
     app.state.driver = driver
     app.state.embedder = embedder
-    app.state.retrieval_service = service
+    app.state.retrieval_service = retrieval_service
+    app.state.query_service = query_service
 
-    logger.info("Retrieval system initialized")
+    logger.info("Verification pipeline initialized")
 
     yield
 

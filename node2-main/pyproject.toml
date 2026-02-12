@@ -39,5 +39,6 @@ strict = true
 asyncio_mode = "auto"
 markers = [
     "integration: tests requiring a live Node 1 server",
+    "neo4j: tests requiring a live Neo4j instance",
 ]
-addopts = "-m 'not integration'"
+addopts = "-m 'not integration and not neo4j'"
