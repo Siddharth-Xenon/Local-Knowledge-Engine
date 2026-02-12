@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     # Node 1 Inference Server (RTX 2060 machine)
     # Easy to update: just change this when network changes
     node1_url: str = "http://0.0.0.0:8001"
-    inference_timeout: int = 60
+    inference_timeout: int = 240
 
     # Server Configuration
     host: str = "0.0.0.0"
@@ -40,6 +40,9 @@ class Settings(BaseSettings):
     retrieval_max_nodes: int = 50
     semantic_top_k: int = 10
     graph_traversal_depth: int = 2
+
+    # LLM
+    openai_api_key: str = ""
 
 
 settings = Settings()

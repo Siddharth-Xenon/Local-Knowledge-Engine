@@ -83,12 +83,14 @@ class Node1LLM(LLMInterface):
 
         try:
             with httpx.Client(timeout=self.timeout) as client:
+                payload = {
+                    "prompt": prompt,
+                    "model": self.model_name,
+                    "stream": False,
+                }
                 response = client.post(
                     f"{self.base_url}/generate",
-                    json={
-                        "prompt": prompt,
-                        "model": self.model_name,
-                    },
+                    json=payload,
                 )
                 response.raise_for_status()
                 data = response.json()
