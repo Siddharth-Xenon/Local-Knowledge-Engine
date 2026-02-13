@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     fulltext_index_name: str = "entity_fulltext"
 
     # Retrieval Configuration
-    retriever_type: str = "hybrid"  # "vector" | "text2cypher" | "hybrid"
+    retriever_type: str = "text2cypher"  # "vector" | "text2cypher" | "hybrid"
     retrieval_max_nodes: int = 50
     semantic_top_k: int = 10
 

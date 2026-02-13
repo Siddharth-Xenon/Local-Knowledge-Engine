@@ -7,8 +7,11 @@ LangGraph merges the returned dict into the full state.
 from __future__ import annotations
 
 import logging
+import re
 import time
 from typing import Any
+
+from json_repair import repair_json
 
 from app.pipeline.prompts import (
     ANTI_PATTERN_PHRASES,
@@ -16,7 +19,9 @@ from app.pipeline.prompts import (
     REGENERATION_PROMPT,
 )
 from app.pipeline.state import PipelineState
+from app.retrieval.models import StructuredContext
 from app.verification.models import (
+    GeneratedAnswer,
     VerificationOutcome,
     VerifiedResponse,
 )
@@ -55,8 +60,18 @@ class PipelineNodes:
         """Retrieve evidence from the knowledge graph."""
         start = time.monotonic()
         query = state["query"]
-
-        context = await self._retrieval.aretrieve_and_package(query)
+        context = StructuredContext(
+            formatted="",
+            evidence_ids=[],
+            token_count=0,
+            sources=[],
+            metadata={},
+        )
+        retrive_attempts = 3
+        for i in range(retrive_attempts):
+            context = await self._retrieval.aretrieve_and_package(query)
+            if len(context.evidence_ids) > 0:
+                break
 
         elapsed = time.monotonic() - start
         logger.info(
@@ -74,6 +89,7 @@ class PipelineNodes:
                 "retrieval_time": round(elapsed, 3),
                 "evidence_count": len(context.evidence_ids),
             },
+            "metadata": context.metadata,
         }
 
     async def generate(self, state: PipelineState) -> dict:
@@ -106,8 +122,11 @@ class PipelineNodes:
         response = await self._llm.ainvoke(prompt)
         raw = response.content if hasattr(response, "content") else str(response)
 
+        # Parse structured JSON from the LLM into clean text
+        answer_text = self._extract_answer_text(raw)
+
         # Check for anti-patterns
-        raw_lower = raw.lower()
+        raw_lower = answer_text.lower()
         anti_patterns_found = [
             phrase for phrase in ANTI_PATTERN_PHRASES if phrase in raw_lower
         ]
@@ -115,16 +134,38 @@ class PipelineNodes:
             logger.warning("Anti-patterns detected: %s", anti_patterns_found)
 
         elapsed = time.monotonic() - start
-        logger.info("Generated response in %.2fs (%d chars)", elapsed, len(raw))
+        logger.info("Generated response in %.2fs (%d chars)", elapsed, len(answer_text))
 
         return {
-            "raw_response": raw,
+            "raw_response": answer_text,
             "audit_trail": {
                 **state.get("audit_trail", {}),
                 "generation_time": round(elapsed, 3),
                 "anti_patterns": anti_patterns_found,
             },
         }
+
+    @staticmethod
+    def _extract_answer_text(raw: str) -> str:
+        """Parse the LLM's structured JSON response into clean text.
+
+        Uses GeneratedAnswer model for type-safe parsing.
+        Falls back to raw text if JSON parsing fails.
+        """
+        # Strip markdown fences if present
+        fence_match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", raw)
+        content = fence_match.group(1) if fence_match else raw
+
+        try:
+            data = repair_json(content, return_objects=True)
+            if not isinstance(data, dict):
+                return raw
+            parsed = GeneratedAnswer.model_validate(data)
+        except Exception:
+            return raw
+
+        text = parsed.to_text()
+        return text if text else raw
 
     async def extract_claims(self, state: PipelineState) -> dict:
         """Extract atomic claims from the generated response."""
@@ -185,6 +226,18 @@ class PipelineNodes:
         )
 
         return decision.value
+
+    def decide_generate(self, state: PipelineState) -> str:
+        """Dont generate if evidence_ids is empty"""
+        if len(state["evidence_ids"]) == 0:
+            state["answer"] = "Could not find any relevant evidence to for the query."
+            # state["audit_trail"] = {
+            #     **state.get("audit_trail", {}),
+            #     "generation_time": 0,
+            #     "anti_patterns": [],
+            # }
+            return "block"
+        return "generate"
 
     async def regenerate(self, state: PipelineState) -> dict:
         """Prepare state for regeneration — increment counter, collect failed claims."""

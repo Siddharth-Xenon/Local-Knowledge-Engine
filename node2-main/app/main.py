@@ -9,6 +9,9 @@ import neo4j
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from neo4j_graphrag.llm.openai_llm import OpenAILLM
+
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import entities, health, query
 from app.config import settings
@@ -68,10 +71,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info(f"Embedder: {settings.embedding_model_name}")
 
     # 4. Create retriever from config
+    retriver_llm = OpenAILLM(model_name="gpt-4o-mini", api_key=settings.openai_api_key)
     retriever = RetrieverFactory.create(
         driver=driver,
         embedder=embedder,
         retriever_type=settings.retriever_type,
+        llm=retriver_llm,
     )
     logger.info(f"Retriever: {settings.retriever_type}")
 
@@ -80,7 +85,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     retrieval_service = RetrievalService(retriever=retriever, packager=packager)
 
     # 6. Create verification pipeline
-    llm = Node1ChatModel()
+    llm = retriver_llm
+    # llm = Node1ChatModel()
     claim_extractor = ClaimExtractor(llm=llm)
     graph_verifier = GraphVerifier(driver=driver)
     semantic_verifier = SemanticVerifier(embedder=embedder)
@@ -162,6 +168,18 @@ async def root() -> dict[str, str]:
         "status": "running",
         "version": "0.3.0",
     }
+
+
+# Mount Static Files
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+
+@app.get("/ui")
+async def ui():
+    """Serve the Single-Page Application."""
+    from fastapi.responses import FileResponse
+
+    return FileResponse("app/static/index.html")
 
 
 if __name__ == "__main__":

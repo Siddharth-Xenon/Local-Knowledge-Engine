@@ -22,16 +22,16 @@ class EvidenceSet(BaseModel):
     query: str = Field(description="Original query")
     graph_count: int = Field(default=0, description="Nodes from graph retrieval")
     semantic_count: int = Field(default=0, description="Nodes from semantic retrieval")
+    metadata: dict = Field(default={}, description="Metadata of the node")
 
 
 class StructuredContext(BaseModel):
     """LLM-ready formatted evidence with source tracking."""
 
     formatted: str = Field(description="Formatted evidence: E1: [type] content...")
-    evidence_ids: list[str] = Field(
-        default_factory=list, description="Evidence IDs: ['E1', 'E2', ...]"
+    evidence_ids: list = Field(
+        default=[], description="Evidence IDs: ['E1', 'E2', ...]"
     )
     token_count: int = Field(default=0, description="Approximate token count")
-    sources: list[str] = Field(
-        default_factory=list, description="Original node IDs for audit trail"
-    )
+    sources: list = Field(default=[], description="Original node IDs for audit trail")
+    metadata: dict = Field(default={}, description="Metadata of the node")

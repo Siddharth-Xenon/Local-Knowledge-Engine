@@ -8,8 +8,14 @@ from __future__ import annotations
 
 import uuid
 from enum import StrEnum
+from typing import Annotated, Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, BeforeValidator, Field
+
+
+def _coerce_to_str(v: Any) -> str:
+    """Coerce non-string values (int, float, bool) from LLM output to str."""
+    return str(v) if not isinstance(v, str) else v
 
 
 class Claim(BaseModel):
@@ -22,7 +28,7 @@ class Claim(BaseModel):
     claim_id: str = Field(default_factory=lambda: f"C{uuid.uuid4().hex[:6]}")
     subject: str = Field(description="Entity or concept the claim is about")
     predicate: str = Field(description="Relationship or action asserted")
-    object_: str = Field(
+    object_: Annotated[str, BeforeValidator(_coerce_to_str)] = Field(
         description="Target entity, value, or condition",
         alias="object",
     )
@@ -40,6 +46,49 @@ class Claim(BaseModel):
     )
 
     model_config = {"populate_by_name": True}
+
+
+class AnswerStatement(BaseModel):
+    """A single factual statement from the LLM's structured response."""
+
+    statement: str
+    evidence_ids: list[str] = Field(default_factory=list)
+
+
+class UncertaintyNote(BaseModel):
+    """An uncertainty flagged by the LLM about its answer."""
+
+    statement: str
+    reason: str = ""
+
+
+class GeneratedAnswer(BaseModel):
+    """Structured LLM response — parsed from JSON, rendered to clean text.
+
+    Matches the JSON schema requested by GROUNDED_GENERATION_PROMPT.
+    """
+
+    answer: list[AnswerStatement] = Field(default_factory=list)
+    uncertainties: list[UncertaintyNote] = Field(default_factory=list)
+
+    def to_text(self) -> str:
+        """Assemble a clean, human-readable answer from structured parts."""
+        if not self.answer:
+            return ""
+
+        result = " ".join(s.statement for s in self.answer)
+
+        if self.uncertainties:
+            notes = []
+            for u in self.uncertainties:
+                note = f"- {u.statement}"
+                if u.reason:
+                    note += f" ({u.reason})"
+                notes.append(note)
+            if notes:
+                result += "\n\n⚠️ **Uncertainties:**\n" + "\n".join(notes)
+
+        return result
 
 
 class ClaimList(BaseModel):

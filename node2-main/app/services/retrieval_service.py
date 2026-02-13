@@ -45,7 +45,9 @@ class RetrievalService:
 
     async def aretrieve(self, query: str, top_k: int = 10) -> EvidenceSet:
         """Retrieve evidence asynchronously and convert to EvidenceSet."""
-        result = self._retriever.search(query_text=query, top_k=top_k)
+        # result = self._retriever.search(query_text=query, top_k=top_k)
+
+        result = self._retriever.search(query_text=query)
         return self._to_evidence_set(query, result)
 
     def retrieve_and_package(
@@ -83,4 +85,5 @@ class RetrievalService:
             query=query,
             graph_count=0,
             semantic_count=len(nodes),
+            metadata=result.metadata,
         )

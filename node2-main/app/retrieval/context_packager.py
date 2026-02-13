@@ -66,4 +66,5 @@ class ContextPackager:
             evidence_ids=evidence_ids,
             token_count=token_count,
             sources=sources,
+            metadata=evidence.metadata,
         )

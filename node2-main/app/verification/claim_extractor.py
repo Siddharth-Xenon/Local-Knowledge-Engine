@@ -6,10 +6,11 @@ Fallback: regex-based extraction for when the LLM fails.
 
 from __future__ import annotations
 
-import json
 import logging
 import re
 from typing import TYPE_CHECKING
+
+from json_repair import repair_json
 
 from app.pipeline.prompts import CLAIM_EXTRACTION_PROMPT
 from app.verification.models import Claim
@@ -74,36 +75,19 @@ class ClaimExtractor:
     @staticmethod
     def _parse_json_response(text: str) -> list[dict]:
         """Extract a JSON claims array from LLM text response."""
-        # Try parsing the whole thing as JSON
+        # Strip markdown fences if present
+        fence_match = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", text)
+        raw = fence_match.group(1) if fence_match else text
+
         try:
-            data = json.loads(text)
-            if isinstance(data, dict) and "claims" in data:
-                return data["claims"]
-            if isinstance(data, list):
-                return data
-        except json.JSONDecodeError:
-            pass
+            data = repair_json(raw, return_objects=True)
+        except Exception:
+            return []
 
-        # Try extracting JSON block from markdown fences
-        json_match = re.search(r"```(?:json)?\s*(\{[\s\S]*?\})\s*```", text)
-        if json_match:
-            try:
-                data = json.loads(json_match.group(1))
-                if isinstance(data, dict) and "claims" in data:
-                    return data["claims"]
-            except json.JSONDecodeError:
-                pass
-
-        # Try finding a JSON array
-        arr_match = re.search(r"\[[\s\S]*\]", text)
-        if arr_match:
-            try:
-                data = json.loads(arr_match.group(0))
-                if isinstance(data, list):
-                    return data
-            except json.JSONDecodeError:
-                pass
-
+        if isinstance(data, dict) and "claims" in data:
+            return data["claims"]
+        if isinstance(data, list):
+            return data
         return []
 
     @staticmethod

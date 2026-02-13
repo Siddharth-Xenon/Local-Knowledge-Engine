@@ -45,6 +45,11 @@ def build_pipeline(
 
     # ── Conditional routing from verify ──
     graph.add_conditional_edges(
+        "retrieve",
+        nodes.decide_generate,
+        {"generate": "generate", "abstain": "abstain"},
+    )
+    graph.add_conditional_edges(
         "verify",
         nodes.decide,
         {
