@@ -1,6 +1,7 @@
 """Node 2 Main Application - Knowledge Engine Core."""
 
 import logging
+import os
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 
@@ -26,6 +27,11 @@ from app.verification.graph_verifier import GraphVerifier
 from app.verification.semantic_verifier import SemanticVerifier
 from app.verification.verifier import Verifier
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)-7s | %(name)s | %(message)s",
+    datefmt="%H:%M:%S",
+)
 logger = logging.getLogger(__name__)
 
 
@@ -33,6 +39,17 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan handler for startup/shutdown."""
     # === STARTUP ===
+
+    # 0. Enable LangSmith tracing if configured
+    if settings.langsmith_tracing:
+        os.environ["LANGSMITH_TRACING"] = "true"
+        os.environ["LANGSMITH_ENDPOINT"] = settings.langsmith_endpoint
+        os.environ["LANGSMITH_API_KEY"] = settings.langsmith_api_key
+        os.environ["LANGSMITH_PROJECT"] = settings.langsmith_project
+        logger.info(
+            "LangSmith tracing enabled (project: %s)",
+            settings.langsmith_project,
+        )
 
     # 1. Connect to Neo4j (async driver for existing graph operations)
     await connect()
@@ -150,5 +167,4 @@ async def root() -> dict[str, str]:
 if __name__ == "__main__":
     import uvicorn
 
-    logging.basicConfig(level=logging.INFO)
     uvicorn.run(app, host=settings.host, port=settings.port)

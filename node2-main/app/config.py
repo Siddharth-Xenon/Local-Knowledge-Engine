@@ -34,12 +34,18 @@ class Settings(BaseSettings):
     fulltext_index_name: str = "entity_fulltext"
 
     # Retrieval Configuration
-    retriever_type: str = "vector"  # "vector" | "text2cypher" | "hybrid"
+    retriever_type: str = "hybrid"  # "vector" | "text2cypher" | "hybrid"
     retrieval_max_nodes: int = 50
     semantic_top_k: int = 10
 
     # LLM
     openai_api_key: str = ""
+
+    # LangSmith Tracing (Optional)
+    langsmith_tracing: bool = False
+    langsmith_endpoint: str = "https://api.smith.langchain.com"
+    langsmith_api_key: str = ""
+    langsmith_project: str = "local-knowledge-engine"
 
 
 settings = Settings()
