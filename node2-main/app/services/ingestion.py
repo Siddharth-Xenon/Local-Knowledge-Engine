@@ -1,5 +1,6 @@
 """Service for ingesting local documents."""
 
+import asyncio
 import logging
 from pathlib import Path
 from typing import Any
@@ -16,11 +17,15 @@ class IngestionService:
     """Handles ingestion of local documents into Neo4j."""
 
     def __init__(
-        self, embedder: SentenceTransformerEmbeddings, database: str | None = None
+        self,
+        embedder: SentenceTransformerEmbeddings,
+        database: str | None = None,
+        graph_builder: Any | None = None,
     ):
         self.embedder = embedder
         self.loader = LocalPDFLoader()
         self.database = database
+        self.graph_builder = graph_builder
 
     async def ingest_file(self, file_path: str | Path) -> dict[str, Any]:
         """Ingest a single file.
@@ -60,7 +65,8 @@ class IngestionService:
             elif hasattr(self.embedder, "encode_batch"):
                 # Usually async in our codebase, but neo4j-graphrag's might be sync?
                 # app/embeddings/base.py defines encode_batch as async
-                # But EmbeddingFactory returns SentenceTransformerEmbeddings which is from lib
+                # But EmbeddingFactory returns SentenceTransformerEmbeddings
+                # which is from lib
                 # The lib version likely has embed_query.
                 # Let's assume embed_query exits if embed_documents doesn't.
                 embeddings = [self.embedder.embed_query(t) for t in texts]
@@ -80,6 +86,12 @@ class IngestionService:
         except Exception as e:
             logger.error(f"Database write failed: {e}")
             return {"status": "error", "message": f"Database write failed: {e}"}
+
+        # 4. Trigger Graph Build (Async)
+        if self.graph_builder:
+            logger.info(f"Triggering background graph build for {path.name}...")
+            # We use create_task to run it in the background
+            asyncio.create_task(self.graph_builder.process_document(path.name))
 
         logger.info(f"Successfully ingested {len(chunks)} chunks from {path.name}")
         return {"status": "success", "chunks": len(chunks)}

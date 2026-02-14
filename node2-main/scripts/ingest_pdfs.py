@@ -13,13 +13,21 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from app.embeddings.factory import EmbeddingFactory
 from app.graph.connection import connect, disconnect
 from app.services.ingestion import IngestionService
+from app.services.graph_builder import GraphBuilderService
 
 # Configure logging
 logging.basicConfig(
     level=logging.DEBUG,
-    format="%(asctime)s | %(levelname)-7s | %(menu)s | %(message)s",
+    format="%(asctime)s | %(levelname)-7s | %(name)s | %(message)s",
     datefmt="%H:%M:%S",
 )
+
+# Silence verbose libraries
+logging.getLogger("neo4j_graphrag").setLevel(logging.INFO)
+logging.getLogger("sentence_transformers").setLevel(logging.WARNING)
+logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("neo4j").setLevel(logging.WARNING)
+
 logger = logging.getLogger("ingest_pdfs")
 
 
@@ -46,7 +54,14 @@ async def main():
         logger.info("Initializing services...")
         # Create embedding model (might download model on first run)
         embedder = EmbeddingFactory.create()
-        service = IngestionService(embedder, database="graphrag")
+
+        # Initialize Graph Builder
+        graph_builder = GraphBuilderService(database="graphrag")
+
+        # Pass graph_builder to IngestionService
+        service = IngestionService(
+            embedder, database="graphrag", graph_builder=graph_builder
+        )
 
         pdf_files = []
         if path.is_file():
@@ -76,6 +91,15 @@ async def main():
 
         logger.info("Ingestion complete!")
         logger.info(f"Summary: {results}")
+
+        # Wait for any background graph build tasks to complete
+        # In a real app these run in background, but for CLI we must wait
+        pending = asyncio.all_tasks() - {asyncio.current_task()}
+        if pending:
+            logger.info(
+                f"Waiting for {len(pending)} background tasks (Graph Building)..."
+            )
+            await asyncio.gather(*pending)
 
     finally:
         await disconnect()
