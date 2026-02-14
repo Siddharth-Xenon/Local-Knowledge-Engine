@@ -6,9 +6,13 @@ from pydantic import BaseModel, Field
 from app.retrieval.models import StructuredContext
 from app.services.query_service import QueryService
 from app.services.retrieval_service import RetrievalService
+from app.services.text_highlighter import TextHighlighter
 from app.verification.models import VerifiedResponse
 
 router = APIRouter(prefix="/query", tags=["query"])
+
+# Instantiate highlighter
+highlighter = TextHighlighter()
 
 
 class QueryRequest(BaseModel):
@@ -82,9 +86,9 @@ async def query(
 
     result: VerifiedResponse = await query_service.query(request.query)
 
-    claims_data = []
+    claims_dicts = []
     for vr in result.claims_with_results:
-        claims_data.append(
+        claims_dicts.append(
             {
                 "claim_id": vr.claim.claim_id,
                 "subject": vr.claim.subject,
@@ -96,10 +100,13 @@ async def query(
             }
         )
 
+    # Augment with highlights
+    claims_dicts = highlighter.align_claims(result.final_answer, claims_dicts)
+
     return PipelineResponse(
         answer=result.final_answer,
         abstained=result.abstained,
         abstention_reason=result.abstention_reason,
-        claims=claims_data,
+        claims=claims_dicts,
         audit=result.audit_summary,
     )

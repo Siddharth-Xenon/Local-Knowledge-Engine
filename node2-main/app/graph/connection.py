@@ -50,10 +50,12 @@ class Neo4jConnection:
 
     @classmethod
     @asynccontextmanager
-    async def get_session(cls) -> AsyncGenerator[AsyncSession, None]:
+    async def get_session(
+        cls, database: str | None = None
+    ) -> AsyncGenerator[AsyncSession, None]:
         """Get a Neo4j session as an async context manager."""
         driver = cls.get_driver()
-        session = driver.session()
+        session = driver.session(database=database) if database else driver.session()
         try:
             yield session
         finally:

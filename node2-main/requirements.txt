@@ -13,6 +13,9 @@ neo4j-graphrag[openai]==1.7.0
 
 # LangChain / LangGraph (Phase 1.5+)
 langchain-core>=0.3
+langchain-community>=0.3
+langchain>=0.3
+pymupdf>=1.22.0
 langgraph>=0.2
 langsmith>=0.7.0
 json-repair>=0.39.0

@@ -71,7 +71,17 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info(f"Embedder: {settings.embedding_model_name}")
 
     # 4. Create retriever from config
-    retriver_llm = OpenAILLM(model_name="gpt-4o-mini", api_key=settings.openai_api_key)
+    retriver_llm = OpenAILLM(
+        model_name=settings.llm_config["retriever_llm"], api_key=settings.openai_api_key
+    )
+    claim_extractor_llm = OpenAILLM(
+        model_name=settings.llm_config["claim_extractor_llm"],
+        api_key=settings.openai_api_key,
+    )
+    llm = OpenAILLM(
+        model_name=settings.llm_config["query_llm"], api_key=settings.openai_api_key
+    )
+
     retriever = RetrieverFactory.create(
         driver=driver,
         embedder=embedder,
@@ -85,9 +95,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     retrieval_service = RetrievalService(retriever=retriever, packager=packager)
 
     # 6. Create verification pipeline
-    llm = retriver_llm
     # llm = Node1ChatModel()
-    claim_extractor = ClaimExtractor(llm=llm)
+    claim_extractor = ClaimExtractor(llm=claim_extractor_llm)
     graph_verifier = GraphVerifier(driver=driver)
     semantic_verifier = SemanticVerifier(embedder=embedder)
     verifier = Verifier(

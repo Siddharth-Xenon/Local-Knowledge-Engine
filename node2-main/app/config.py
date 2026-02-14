@@ -47,5 +47,13 @@ class Settings(BaseSettings):
     langsmith_api_key: str = ""
     langsmith_project: str = "local-knowledge-engine"
 
+    # LLM model
+    llm_config: dict[str, str] = {
+        "retriever_llm": "gpt-4o",
+        "claim_extractor_llm": "gpt-5-mini",
+        "verifier_llm": "gpt-5-nano",
+        "query_llm": "gpt-5-nano",
+    }
+
 
 settings = Settings()
