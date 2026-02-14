@@ -55,7 +55,9 @@ class Neo4jConnection:
     ) -> AsyncGenerator[AsyncSession, None]:
         """Get a Neo4j session as an async context manager."""
         driver = cls.get_driver()
-        session = driver.session(database=database) if database else driver.session()
+        # Default to configured query database if not specified
+        db = database or settings.query_database
+        session = driver.session(database=db) if db else driver.session()
         try:
             yield session
         finally:

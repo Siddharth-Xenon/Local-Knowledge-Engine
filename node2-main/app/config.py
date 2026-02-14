@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     neo4j_uri: str = "bolt://localhost:7687"
     neo4j_user: str = "neo4j"
     neo4j_password: str = "knowledge-engine-dev"
+    query_database: str = "graphrag"
 
     # Node 1 Inference Server (RTX 2060 machine)
     node1_url: str = "http://0.0.0.0:8001"
@@ -49,7 +50,7 @@ class Settings(BaseSettings):
 
     # LLM model
     llm_config: dict[str, str] = {
-        "retriever_llm": "gpt-4o",
+        "retriever_llm": "gpt-5",
         "claim_extractor_llm": "gpt-5-mini",
         "verifier_llm": "gpt-5-nano",
         "query_llm": "gpt-5-nano",

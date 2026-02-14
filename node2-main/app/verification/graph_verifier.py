@@ -40,8 +40,9 @@ class GraphVerifier:
     Checks edge existence, relationship direction, and type match.
     """
 
-    def __init__(self, driver: Driver) -> None:
+    def __init__(self, driver: Driver, database: str = "neo4j") -> None:
         self._driver = driver
+        self._database = database
 
     async def verify(self, claim: Claim) -> VerificationResult:
         """Verify a single claim against the graph.
@@ -126,7 +127,7 @@ class GraphVerifier:
 
     def _run_query(self, query: str, params: dict) -> list[dict]:
         """Execute a Cypher query and return results as dicts."""
-        with self._driver.session() as session:
+        with self._driver.session(database=self._database) as session:
             result = session.run(query, params)
             return [dict(record) for record in result]
 

@@ -97,7 +97,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # 6. Create verification pipeline
     # llm = Node1ChatModel()
     claim_extractor = ClaimExtractor(llm=claim_extractor_llm)
-    graph_verifier = GraphVerifier(driver=driver)
+    graph_verifier = GraphVerifier(driver=driver, database=settings.query_database)
     semantic_verifier = SemanticVerifier(embedder=embedder)
     verifier = Verifier(
         graph_verifier=graph_verifier,

@@ -9,6 +9,7 @@ from neo4j_graphrag.retrievers import (
     Text2CypherRetriever,
     VectorCypherRetriever,
 )
+from neo4j_graphrag.schema import get_schema
 
 from app.config import settings
 
@@ -48,6 +49,7 @@ class RetrieverFactory:
             index_name=index_name or settings.vector_index_name,
             embedder=embedder,
             retrieval_query=retrieval_query or VECTOR_RETRIEVAL_QUERY,
+            neo4j_database=settings.query_database,
         )
 
     @staticmethod
@@ -61,6 +63,8 @@ class RetrieverFactory:
             driver=driver,
             llm=llm,
             examples=examples or [],
+            neo4j_database=settings.query_database,
+            neo4j_schema=get_schema(driver, database=settings.query_database),
         )
 
     @staticmethod
@@ -78,6 +82,7 @@ class RetrieverFactory:
             fulltext_index_name=fulltext_index_name or settings.fulltext_index_name,
             embedder=embedder,
             retrieval_query=retrieval_query or HYBRID_RETRIEVAL_QUERY,
+            neo4j_database=settings.query_database,
         )
 
     @staticmethod
