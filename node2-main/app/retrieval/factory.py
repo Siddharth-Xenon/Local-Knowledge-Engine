@@ -113,7 +113,16 @@ class RetrieverFactory:
         elif type_name == "text2cypher":
             if llm is None:
                 raise ValueError("Text2Cypher retriever requires llm.")
-            return RetrieverFactory.create_text2cypher(driver, llm)
+            examples = [
+                """
+                Question: "What companies did Apple acquire?"
+                Cypher: MATCH (a:Entity {name: 'Apple'})-[r:RELATED]->(b:Entity) WHERE r.type = 'ACQUIRED' RETURN b.name
+                """,
+                """
+                Question: "How are Apple and Steve Jobs related?"
+                Cypher: MATCH (a:Entity {name: 'Apple'})-[r:RELATED]-(b:Entity {name: 'Steve Jobs'}) RETURN r.type, r.description""",
+            ]
+            return RetrieverFactory.create_text2cypher(driver, llm, examples)
 
         elif type_name == "hybrid":
             if embedder is None:
