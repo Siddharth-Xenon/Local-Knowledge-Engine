@@ -7,8 +7,11 @@ from typing import Any
 
 from neo4j_graphrag.embeddings import SentenceTransformerEmbeddings
 
+from app.config import settings
 from app.graph.connection import get_session
 from app.services.pdf_loader import LocalPDFLoader
+from app.inference.gemini_llm import GeminiLLM
+
 
 logger = logging.getLogger(__name__)
 

@@ -10,10 +10,12 @@ from pathlib import Path
 # Add project root to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from app.config import settings
 from app.embeddings.factory import EmbeddingFactory
 from app.graph.connection import connect, disconnect
 from app.services.ingestion import IngestionService
 from app.services.graph_builder import GraphBuilderService
+from app.inference.gemini_llm import GeminiLLM
 
 # Configure logging
 logging.basicConfig(
@@ -56,7 +58,10 @@ async def main():
         embedder = EmbeddingFactory.create()
 
         # Initialize Graph Builder
-        graph_builder = GraphBuilderService(database="graphrag")
+        llm = GeminiLLM(
+            model_name=settings.gemini_model, api_key=settings.google_api_key
+        )
+        graph_builder = GraphBuilderService(llm=llm, database="graphrag")
 
         # Pass graph_builder to IngestionService
         service = IngestionService(

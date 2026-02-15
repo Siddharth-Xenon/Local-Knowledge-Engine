@@ -41,6 +41,8 @@ class Settings(BaseSettings):
 
     # LLM
     openai_api_key: str = ""
+    google_api_key: str = ""
+    gemini_model: str = "gemini-3-flash-preview"
 
     # LangSmith Tracing (Optional)
     langsmith_tracing: bool = False
@@ -50,10 +52,11 @@ class Settings(BaseSettings):
 
     # LLM model
     llm_config: dict[str, str] = {
-        "retriever_llm": "gpt-5",
-        "claim_extractor_llm": "gpt-5-mini",
-        "verifier_llm": "gpt-5-nano",
-        "query_llm": "gpt-5-nano",
+        "retriever_llm": "gemini-3-pro-preview",
+        "claim_extractor_llm": "gemini-3-flash-preview",
+        "verifier_llm": "gemini-3-flash-preview",
+        "query_llm": "gemini-3-flash-preview",
+        "graph_builder_llm": "gemini-3-flash-preview",
     }
 
 

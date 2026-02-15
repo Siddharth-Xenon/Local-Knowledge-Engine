@@ -6,9 +6,8 @@ import logging
 from typing import Any
 
 from pydantic import BaseModel, Field
-from neo4j_graphrag.llm.openai_llm import OpenAILLM
+from neo4j_graphrag.llm.base import LLMInterface
 from app.graph.connection import get_session
-from app.config import settings
 
 # from app.inference.llm_adapter import Node1LLM
 
@@ -37,7 +36,8 @@ class Relationship(BaseModel):
     source: str = Field(..., description="Name of the source entity")
     target: str = Field(..., description="Name of the target entity")
     type: str = Field(
-        ..., description="Type of relationship (e.g., WORKS_FOR, LOCATED_IN)"
+        ...,
+        description="Type of relationship (e.g., WORKS_FOR, LOCATED_IN, etc.)",
     )
     description: str | None = Field(None, description="Context for the relationship")
 
@@ -52,20 +52,19 @@ class GraphExtraction(BaseModel):
 class GraphBuilderService:
     """Service to extract and build knowledge graph from documents using Node 1 LLM."""
 
-    def __init__(self, llm: OpenAILLM | None = None, database: str | None = None):
-        self.llm = llm or OpenAILLM(
-            model_name="gpt-4o-mini", api_key=settings.openai_api_key
-        )
+    def __init__(self, llm: LLMInterface | None = None, database: str | None = None):
+        self.llm = llm
         self.database = database
         # System prompt to guide the LLM
         schema = json.dumps(GraphExtraction.model_json_schema(), indent=2)
         self.system_prompt = (
-            "You are a Knowledge Graph expert. Your task is to extract meaningful "
-            "entities and relationships from the provided text chunk.\n"
-            "1. Identify entities (Person, Organization, Location, Concept, "
-            "Event, Technology).\n"
-            "2. Identify relationships between these entities.\n"
-            "3. Return ONLY a valid JSON object matching the following schema:\n"
+            """You are a Knowledge Graph expert. Your task is to extract meaningful
+        entities and relationships from the provided text chunk.\n
+        Your goal is to identify and categorize entities while ensuring that specific data types such as dates, numbers, revenues, and other non-entity information are not extracted as separate nodes.
+        Instead, treat these as properties associated with the relevant entities.
+        1. Identify entities (Person, Organization, Location, Concept, Event, Technology).\n"
+        2. Identify relationships between these entities.\n"
+        3. Return ONLY a valid JSON object matching the following schema:\n"""
             f"{schema}\n"
             "4. Do not include any explanation or markdown formatting."
         )
@@ -85,7 +84,7 @@ class GraphBuilderService:
 
         # 2. Process chunks concurrently
         # Limit concurrency to avoid overloading Node 1 (or OpenAI rate limits)
-        semaphore = asyncio.Semaphore(10)  # Adjust based on LLM/DB limits
+        semaphore = asyncio.Semaphore(1)  # Adjust based on LLM/DB limits
 
         async def process_chunk(chunk):
             async with semaphore:

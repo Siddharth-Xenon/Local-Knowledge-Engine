@@ -9,7 +9,7 @@ import neo4j
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from neo4j_graphrag.llm.openai_llm import OpenAILLM
+
 
 from fastapi.staticfiles import StaticFiles
 
@@ -18,7 +18,7 @@ from app.config import settings
 from app.core import KnowledgeEngineError
 from app.embeddings.factory import EmbeddingFactory
 from app.graph.connection import connect, disconnect
-from app.inference.llm_adapter import Node1ChatModel
+from app.inference.factory import LLMFactory
 from app.pipeline.graph import build_pipeline
 from app.pipeline.nodes import PipelineNodes
 from app.retrieval.context_packager import ContextPackager
@@ -71,16 +71,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     logger.info(f"Embedder: {settings.embedding_model_name}")
 
     # 4. Create retriever from config
-    retriver_llm = OpenAILLM(
-        model_name=settings.llm_config["retriever_llm"], api_key=settings.openai_api_key
+    retriver_llm = LLMFactory.create(model_name=settings.llm_config["retriever_llm"])
+    claim_extractor_llm = LLMFactory.create(
+        model_name=settings.llm_config["claim_extractor_llm"]
     )
-    claim_extractor_llm = OpenAILLM(
-        model_name=settings.llm_config["claim_extractor_llm"],
-        api_key=settings.openai_api_key,
-    )
-    llm = OpenAILLM(
-        model_name=settings.llm_config["query_llm"], api_key=settings.openai_api_key
-    )
+    llm = LLMFactory.create(model_name=settings.llm_config["query_llm"])
 
     retriever = RetrieverFactory.create(
         driver=driver,
