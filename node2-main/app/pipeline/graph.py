@@ -39,7 +39,6 @@ def build_pipeline(
     graph.add_node("abstain", nodes.abstain)
 
     # ── Linear edges ──
-    graph.add_edge("retrieve", "generate")
     graph.add_edge("generate", "extract_claims")
     graph.add_edge("extract_claims", "verify")
 
