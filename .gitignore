@@ -53,3 +53,4 @@ node2-main/data/*
 
 *.json
 node2-main/venv/*
+node2-main/pipeline_graph.png

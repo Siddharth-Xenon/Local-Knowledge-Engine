@@ -121,6 +121,7 @@ class RetrieverFactory:
                 """
                 Question: "How are Apple and Steve Jobs related?"
                 Cypher: MATCH (a:Entity {name: 'Apple'})-[r:RELATED]-(b:Entity {name: 'Steve Jobs'}) RETURN r.type, r.description""",
+                "Make sure you consider relationship.type to understand the relationship between nodes.",
             ]
             return RetrieverFactory.create_text2cypher(driver, llm, examples)
 

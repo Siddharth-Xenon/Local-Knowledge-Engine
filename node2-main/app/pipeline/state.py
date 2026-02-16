@@ -6,9 +6,15 @@ Each node reads/writes specific keys; LangGraph merges partial updates.
 
 from __future__ import annotations
 
-from typing import TypedDict
+from typing import Annotated, TypedDict
 
 from app.verification.models import Claim, VerificationResult
+
+
+def merge_audit(current: dict | None, update: dict) -> dict:
+    """Merge audit trail updates."""
+    current = current or {}
+    return {**current, **update}
 
 
 class PipelineState(TypedDict, total=False):
@@ -42,4 +48,4 @@ class PipelineState(TypedDict, total=False):
     # ── Output ──
     final_answer: str | None
     abstained: bool
-    audit_trail: dict
+    audit_trail: Annotated[dict, merge_audit]

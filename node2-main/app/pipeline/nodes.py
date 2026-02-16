@@ -230,13 +230,7 @@ class PipelineNodes:
     def decide_generate(self, state: PipelineState) -> str:
         """Dont generate if evidence_ids is empty"""
         if len(state["evidence_ids"]) == 0:
-            state["answer"] = "Could not find any relevant evidence to for the query."
-            # state["audit_trail"] = {
-            #     **state.get("audit_trail", {}),
-            #     "generation_time": 0,
-            #     "anti_patterns": [],
-            # }
-            return "block"
+            return "abstain"
         return "generate"
 
     async def regenerate(self, state: PipelineState) -> dict:
@@ -309,18 +303,23 @@ class PipelineNodes:
         """Build an abstention response."""
         results = state.get("verification_results", [])
 
-        contradicted = [
-            r for r in results if r.outcome == VerificationOutcome.CONTRADICTED
-        ]
-
         reason = "Unable to provide a verified answer."
-        if contradicted:
-            reason = (
-                "Evidence contradicts some claims. Cannot provide a reliable answer."
-            )
+
+        # Check for empty evidence
+        if not state.get("evidence_ids"):
+            reason = "Could not find any relevant evidence for the query."
+        else:
+            contradicted = [
+                r for r in results if r.outcome == VerificationOutcome.CONTRADICTED
+            ]
+            if contradicted:
+                reason = (
+                    "Evidence contradicts some claims. "
+                    "Cannot provide a reliable answer."
+                )
 
         return {
-            "final_answer": None,
+            "final_answer": reason,
             "abstained": True,
             "audit_trail": {
                 **state.get("audit_trail", {}),

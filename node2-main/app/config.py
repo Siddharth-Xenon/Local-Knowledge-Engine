@@ -52,7 +52,7 @@ class Settings(BaseSettings):
 
     # LLM model
     llm_config: dict[str, str] = {
-        "retriever_llm": "gemini-3-pro-preview",
+        "retriever_llm": "gemini-3-flash-preview",
         "claim_extractor_llm": "gemini-3-flash-preview",
         "verifier_llm": "gemini-3-flash-preview",
         "query_llm": "gemini-3-flash-preview",
