@@ -15,7 +15,7 @@ from app.verification.semantic_verifier import SemanticVerifier
 
 logger = logging.getLogger(__name__)
 
-CLAIM_TIMEOUT_SECONDS = 2.0
+CLAIM_TIMEOUT_SECONDS = 10.0
 
 
 class Verifier:
@@ -41,20 +41,50 @@ class Verifier:
     ) -> list[VerificationResult]:
         """Verify all claims using multi-layer strategy.
 
-        Each claim is verified with a per-claim timeout.
+        Optimized with batch graph verification.
         """
-        tasks = [self._verify_single(claim, evidence_texts) for claim in claims]
-        return await asyncio.gather(*tasks)
+        # 1. Batch Graph Verification (Fast, single round-trip)
+        graph_results = await self._graph.verify_batch(claims)
 
-    async def _verify_single(
+        # 2. Identify claims needing semantic verification
+        # We'll fill this list with results as we get them
+        final_results: list[VerificationResult | None] = [None] * len(claims)
+        semantic_tasks = []
+        semantic_indices = []
+
+        for i, (claim, g_result) in enumerate(zip(claims, graph_results)):
+            # If graph is definitive, we're done with this claim
+            if g_result.outcome in {
+                VerificationOutcome.SUPPORTED,
+                VerificationOutcome.CONTRADICTED,
+            }:
+                final_results[i] = g_result
+            else:
+                # Graph inconclusive; queue for semantic verification
+                semantic_indices.append(i)
+                semantic_tasks.append(
+                    self._verify_semantic_with_timeout(claim, evidence_texts, g_result)
+                )
+
+        # 3. Run semantic verifications concurrently
+        if semantic_tasks:
+            semantic_outcomes = await asyncio.gather(*semantic_tasks)
+            for i, result in zip(semantic_indices, semantic_outcomes):
+                final_results[i] = result
+
+        # The list is guaranteed to be fully populated now
+        return final_results  # type: ignore
+
+    async def _verify_semantic_with_timeout(
         self,
         claim: Claim,
         evidence_texts: list[str],
+        graph_result: VerificationResult,
     ) -> VerificationResult:
-        """Verify a single claim with timeout."""
+        """Run semantic verification with timeout, falling back to graph result."""
         try:
             return await asyncio.wait_for(
-                self._verify_with_fallback(claim, evidence_texts),
+                self._verify_semantic_logic(claim, evidence_texts, graph_result),
                 timeout=CLAIM_TIMEOUT_SECONDS,
             )
         except TimeoutError:
@@ -66,22 +96,13 @@ class Verifier:
                 reason=f"Verification timed out after {CLAIM_TIMEOUT_SECONDS}s",
             )
 
-    async def _verify_with_fallback(
+    async def _verify_semantic_logic(
         self,
         claim: Claim,
         evidence_texts: list[str],
+        graph_result: VerificationResult,
     ) -> VerificationResult:
-        """Graph first, semantic fallback."""
-        graph_result = await self._graph.verify(claim)
-
-        # If graph is definitive (SUPPORTED or CONTRADICTED), trust it
-        if graph_result.outcome in {
-            VerificationOutcome.SUPPORTED,
-            VerificationOutcome.CONTRADICTED,
-        }:
-            return graph_result
-
-        # Graph inconclusive — try semantic
+        """Fallback logic: try semantic, else return graph result."""
         if evidence_texts:
             semantic_result = await self._semantic.verify(claim, evidence_texts)
 

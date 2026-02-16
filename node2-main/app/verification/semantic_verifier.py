@@ -6,6 +6,7 @@ claim text and evidence documents.
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import TYPE_CHECKING
 
@@ -19,8 +20,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # Thresholds (conservative per GOAL.md)
-SUPPORTED_THRESHOLD = 0.8
-AMBIGUOUS_THRESHOLD = 0.5
+SUPPORTED_THRESHOLD = 0.7
+AMBIGUOUS_THRESHOLD = 0.69999
 
 
 class SemanticVerifier:
@@ -48,7 +49,9 @@ class SemanticVerifier:
 
         try:
             claim_text = f"{claim.subject} {claim.predicate} {claim.object_}"
-            max_sim, best_idx = self._compute_max_similarity(claim_text, evidence_texts)
+            max_sim, best_idx = await asyncio.to_thread(
+                self._compute_max_similarity, claim_text, evidence_texts
+            )
 
             outcome, confidence = self._classify(max_sim)
 

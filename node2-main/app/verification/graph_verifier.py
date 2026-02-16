@@ -45,79 +45,124 @@ class GraphVerifier:
         self._database = database
 
     async def verify(self, claim: Claim) -> VerificationResult:
-        """Verify a single claim against the graph.
+        """Verify a single claim (convenience wrapper for batch)."""
+        results = await self.verify_batch([claim])
+        return results[0]
 
-        Runs Cypher queries to check edge existence between
-        the claim's subject and object.
+    async def verify_batch(self, claims: list[Claim]) -> list[VerificationResult]:
+        """Verify multiple claims in a single batch query.
+
+        Drastically reduces round-trips compared to verifying one by one.
         """
+        if not claims:
+            return []
+
         try:
-            return await self._check_edge(claim)
+            return await self._check_edges_batch(claims)
         except Exception as e:
-            logger.warning("Graph verification failed for %s: %s", claim.claim_id, e)
-            return VerificationResult(
-                claim=claim,
-                outcome=VerificationOutcome.UNSUPPORTED,
-                confidence=0.0,
-                reason=f"Graph verification error: {e}",
-            )
-
-    async def _check_edge(self, claim: Claim) -> VerificationResult:
-        """Check if a graph edge supports the claim."""
-        params = {"subject": claim.subject, "object": claim.object_}
-
-        # Forward direction check
-        forward_results = self._run_query(_EDGE_CHECK_QUERY, params)
-
-        if forward_results:
-            # Check if any relationship type matches the predicate
-            matching = [
-                r
-                for r in forward_results
-                if self._predicate_matches(claim.predicate, r["rel_type"])
+            logger.warning("Batch verification failed: %s", e)
+            # Fallback to unsupported for all if batch fails
+            return [
+                VerificationResult(
+                    claim=c,
+                    outcome=VerificationOutcome.UNSUPPORTED,
+                    confidence=0.0,
+                    reason=f"Batch verification error: {e}",
+                )
+                for c in claims
             ]
 
-            if matching:
-                return VerificationResult(
-                    claim=claim,
-                    outcome=VerificationOutcome.SUPPORTED,
-                    confidence=0.95,
-                    evidence_used=[f"edge:{r['rel_type']}" for r in matching],
-                    reason=f"Graph edge confirms: {matching[0]['rel_type']}",
-                )
+    async def _check_edges_batch(self, claims: list[Claim]) -> list[VerificationResult]:
+        """Run a single Cypher query for all claims and process results."""
+        batch_params = [
+            {"id": c.claim_id, "subject": c.subject, "object": c.object_}
+            for c in claims
+        ]
 
-            # Edge exists but different type — might contradict
+        # UNWIND batch to check all S-O pairs at once
+        # Matches in both directions: (s)-[r]-(o)
+        query = """
+        UNWIND $batch AS item
+        MATCH (s) WHERE s.name = item.subject OR s.id = item.subject
+        MATCH (o) WHERE o.name = item.object OR o.id = item.object
+        MATCH (s)-[r]-(o)
+        RETURN item.id AS claim_id,
+               type(r) AS rel_type,
+               startNode(r) = s AS is_forward
+        """
+
+        results = self._run_query(query, {"batch": batch_params})
+
+        # Group edges by claim_id
+        from collections import defaultdict
+
+        edges_by_claim = defaultdict(list)
+        for row in results:
+            edges_by_claim[row["claim_id"]].append(row)
+
+        # Determine outcome for each claim
+        return [
+            self._determine_outcome(claim, edges_by_claim[claim.claim_id])
+            for claim in claims
+        ]
+
+    def _determine_outcome(self, claim: Claim, edges: list[dict]) -> VerificationResult:
+        """Evaluate edges to determine outcome.
+
+        Possibilities: SUPPORTED, CONTRADICTED, AMBIGUOUS, or UNSUPPORTED.
+        """
+        # 1. Forward edges (s -> o)
+        forward_edges = [e for e in edges if e["is_forward"]]
+        matches = [
+            e
+            for e in forward_edges
+            if self._predicate_matches(claim.predicate, e["rel_type"])
+        ]
+
+        if matches:
+            return VerificationResult(
+                claim=claim,
+                outcome=VerificationOutcome.SUPPORTED,
+                confidence=0.95,
+                evidence_used=[f"edge:{e['rel_type']}" for e in matches],
+                reason=f"Graph edge confirms: {matches[0]['rel_type']}",
+            )
+
+        if forward_edges:
+            # Edges exist in correct direction but types don't match
+            # This is AMBIGUOUS unless we want to be strict
             return VerificationResult(
                 claim=claim,
                 outcome=VerificationOutcome.AMBIGUOUS,
                 confidence=0.4,
-                evidence_used=[f"edge:{r['rel_type']}" for r in forward_results],
+                evidence_used=[f"edge:{e['rel_type']}" for e in forward_edges],
                 reason=(
                     f"Edge exists but type mismatch: "
-                    f"found {forward_results[0]['rel_type']}, "
+                    f"found {[e['rel_type'] for e in forward_edges]}, "
                     f"expected {claim.predicate}"
                 ),
             )
 
-        # Check reverse direction — could indicate contradiction
-        reverse_results = self._run_query(_REVERSE_EDGE_QUERY, params)
-        if reverse_results:
-            matching_reverse = [
-                r
-                for r in reverse_results
-                if self._predicate_matches(claim.predicate, r["rel_type"])
-            ]
-            if matching_reverse:
-                return VerificationResult(
-                    claim=claim,
-                    outcome=VerificationOutcome.CONTRADICTED,
-                    confidence=0.7,
-                    evidence_used=[
-                        f"edge:{r['rel_type']}(reversed)" for r in matching_reverse
-                    ],
-                    reason="Relationship exists but in opposite direction",
-                )
+        # 2. Reverse edges (o -> s)
+        reverse_edges = [e for e in edges if not e["is_forward"]]
+        reverse_matches = [
+            e
+            for e in reverse_edges
+            if self._predicate_matches(claim.predicate, e["rel_type"])
+        ]
 
-        # No edges found at all
+        if reverse_matches:
+            return VerificationResult(
+                claim=claim,
+                outcome=VerificationOutcome.CONTRADICTED,
+                confidence=0.7,
+                evidence_used=[
+                    f"edge:{e['rel_type']}(reversed)" for e in reverse_matches
+                ],
+                reason="Relationship exists but in opposite direction",
+            )
+
+        # 3. No relevant edges found
         return VerificationResult(
             claim=claim,
             outcome=VerificationOutcome.UNSUPPORTED,

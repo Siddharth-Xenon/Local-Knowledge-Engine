@@ -103,12 +103,7 @@
                         </div>
                         <div class="flex-1 space-y-8">
                             
-                            <!-- Main Answer Text with Inline Highlighting -->
-                            <div class="prose prose-invert max-w-none" 
-                                 @mouseover="handleHover($event)" 
-                                 @mouseout="hideTooltip()">
-                                <p x-html="formattedAnswer" class="leading-relaxed text-gray-400"></p>
-                            </div>
+
 
                             <!-- Floating Tooltip -->
                             <div x-show="tooltip.visible" 
