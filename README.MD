@@ -176,4 +176,4 @@ This project isn't just a script; it's engineered with scalable software pattern
 
 ---
 
-> *Built by [Your Name]. Passionate about Engineering Safe, Deterministic AI Systems.*
+> *Built by Siddharth Solanki. Passionate about Engineering Safe, Deterministic AI Systems.*
