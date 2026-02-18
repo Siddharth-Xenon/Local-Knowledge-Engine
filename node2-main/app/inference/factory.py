@@ -7,6 +7,7 @@ from neo4j_graphrag.llm.openai_llm import OpenAILLM
 
 from app.config import settings
 from app.inference.gemini_llm import GeminiLLM
+from app.inference.llm_adapter import Node1LLM
 
 
 class LLMFactory:
@@ -25,7 +26,9 @@ class LLMFactory:
         """
         if model_name.startswith("gemini"):
             return GeminiLLM(model_name=model_name, **kwargs)
-        else:
+        elif model_name.startswith("gpt"):
             return OpenAILLM(
                 model_name=model_name, api_key=settings.openai_api_key, **kwargs
             )
+        elif model_name.startswith("deepseek"):
+            return Node1LLM(**kwargs)

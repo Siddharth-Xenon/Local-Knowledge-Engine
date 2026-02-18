@@ -1,11 +1,7 @@
-"""Graph verifier — verifies claims against Neo4j knowledge graph edges.
-
-Layer 1 verification (GOAL.md §11.3): edge existence, direction, type match.
-"""
-
 from __future__ import annotations
 
 import logging
+import time
 from typing import TYPE_CHECKING
 
 from app.verification.models import Claim, VerificationOutcome, VerificationResult
@@ -57,8 +53,16 @@ class GraphVerifier:
         if not claims:
             return []
 
+        start = time.monotonic()
         try:
-            return await self._check_edges_batch(claims)
+            results = await self._check_edges_batch(claims)
+            duration = time.monotonic() - start
+            logger.info(
+                "Graph verification batch for %d claims took %.3fs",
+                len(claims),
+                duration,
+            )
+            return results
         except Exception as e:
             logger.warning("Batch verification failed: %s", e)
             # Fallback to unsupported for all if batch fails
@@ -87,11 +91,16 @@ class GraphVerifier:
         MATCH (o) WHERE o.name = item.object OR o.id = item.object
         MATCH (s)-[r]-(o)
         RETURN item.id AS claim_id,
-               type(r) AS rel_type,
-               startNode(r) = s AS is_forward
+                type(r) AS rel_type,
+                startNode(r) = s AS is_forward
         """
 
+        query_start = time.monotonic()
         results = self._run_query(query, {"batch": batch_params})
+        query_duration = time.monotonic() - query_start
+        logger.debug(
+            "Graph Cypher query took %.3fs for %d items", query_duration, len(claims)
+        )
 
         # Group edges by claim_id
         from collections import defaultdict

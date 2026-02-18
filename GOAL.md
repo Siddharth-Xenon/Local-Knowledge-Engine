@@ -1,9 +1,13 @@
 # Local-First Enterprise Knowledge Engine
 
-**(GraphRAG + Verification)**
+** (GraphRAG + Verification) **
 *Internal Development Guide*
 
+> [!NOTE]
+> **Current Status (Feb 2026):** Phase 1-5 Complete. The system is a functional dual-node knowledge engine with a LangGraph-based verification pipeline and a web-based frontend.
+
 ---
+
 
 ## 0. Purpose of This Document
 
@@ -373,43 +377,42 @@ Key principle:
 
 ```
 ┌────────────┐
-│   Client   │
+│   Client   │ (Browser)
 └─────┬──────┘
       │
-      ▼
-┌────────────────────┐
-│  Query Orchestrator │
-└─────┬──────────────┘
+      │ LangGraph Pipeline
+      ▼ ═════════════════
       │
-      ├─────────────► Retrieval Layer (GraphRAG)
-      │                     │
+      ├─────────────► Retrieval (neo4j-graphrag)
+      │                     │ (Node 2)
       │                     ▼
       │              Evidence Set
       │
       ▼
 ┌────────────────────┐
-│  Generator (LLM)   │
+│  Generator (LLM)   │ (Node 1)
 └─────┬──────────────┘
       │
       ▼
 ┌────────────────────┐
-│ Claim Extraction   │
+│ Claim Extraction   │ (LangChain)
 └─────┬──────────────┘
       │
       ▼
 ┌────────────────────┐
-│ Verification Layer │
+│ Verification Layer │ (Node 2)
 └─────┬──────────────┘
       │
       ▼
 ┌────────────────────┐
-│ Response Controller│
+│ Response Controller│ (LangGraph Nodes)
 └─────┬──────────────┘
       │
       ▼
 ┌────────────┐
-│   Output   │
+│   Output   │ (Alpine UI)
 └────────────┘
+
 ```
 
 ---
@@ -742,8 +745,16 @@ Verification runs:
 ### 8.6 Orchestration & APIs
 
 * `FastAPI` (inter-node APIs)
+* `LangGraph` (Workflow orchestration)
+* `LangChain` (LLM abstraction & Structured Output)
 * JSON over HTTP
 * Stateless calls
+
+### 8.8 Logging & Observability
+
+* `structlog` for structured JSON logging
+* `LangSmith` for pipeline tracing
+* `Prometheus` (planned)
 
 No message queues initially.
 
@@ -1368,29 +1379,40 @@ If any critical component fails:
 
 This is a **suggested build order**, not a promise.
 
-### Phase 1
+### Phase 1: Foundation (COMPLETE ✅)
+* Dual-node setup (GTX 1660 + RTX 2060)
+* Core Neo4j Repository
+* Inference Proxy
 
-* Core GraphRAG
-* Single generator
-* Manual verification
+### Phase 1.5: Library Migration (COMPLETE ✅)
+* Migration to `neo4j-graphrag` retrievers
+* LangChain `BaseChatModel` implementation
 
-### Phase 2
+### Phase 2: Verification Pipeline (COMPLETE ✅)
+* LangGraph state machine orchestration
+* Pydantic-based claim models
+* Graph + Semantic multi-layer verification
 
-* Claim extraction
-* Automated verification
-* Hallucination benchmarks
+### Phase 3: Hardening & Observability (COMPLETE ✅)
+* Structured logging with `structlog`
+* LangSmith tracing integration
+* Resilience patterns (Circuit Breakers)
 
-### Phase 3
+### Phase 4: Domain & Real-World Ingestion (COMPLETE ✅)
+* PDF/DocX parsing with metadata preservation
+* Automated KG construction via `SimpleKGPipeline`
+* Entity resolution and merge logic
 
-* Regeneration logic
-* Access control
-* Audit logs
+### Phase 5: GUI & Manual Verification (COMPLETE ✅)
+* Single-page Application (Alpine.js + Tailwind)
+* Manual claim review interface
+* Smart evidence highlighting
 
-### Phase 4
+### Phase 6: Optimization & Benchmarking (IN PROGRESS 🏗️)
+* Semantic threshold tuning
+* Text2Cypher robustness improvements
+* Systematic hallucination benchmarking
 
-* Domain specialization
-* Performance tuning
-* Human-in-the-loop tools
 
 ---
 

@@ -67,7 +67,7 @@ class PipelineNodes:
             sources=[],
             metadata={},
         )
-        retrive_attempts = 3
+        retrive_attempts = 1
         for i in range(retrive_attempts):
             context = await self._retrieval.aretrieve_and_package(query)
             if len(context.evidence_ids) > 0:

@@ -52,7 +52,7 @@ class Node1LLM(LLMInterface):
             **kwargs,
         )
         self.base_url = base_url or settings.node1_url
-        self.timeout = timeout or settings.inference_timeout
+        self.timeout = 240
         self._async_client = InferenceClient(
             base_url=self.base_url,
             timeout=self.timeout,

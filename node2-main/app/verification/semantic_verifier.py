@@ -1,13 +1,8 @@
-"""Semantic verifier — verifies claims via embedding similarity.
-
-Layer 2 verification (GOAL.md §11.3): cosine similarity between
-claim text and evidence documents.
-"""
-
 from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -33,12 +28,43 @@ class SemanticVerifier:
     def __init__(self, embedder: Embedder) -> None:
         self._embedder = embedder
 
+    async def precompute_evidence_embeddings(
+        self,
+        evidence_texts: list[str],
+    ) -> list[np.ndarray]:
+        """Pre-compute embeddings for a list of evidence texts."""
+        if not evidence_texts:
+            return []
+
+        start = time.monotonic()
+        embeddings = await asyncio.to_thread(self._batch_embed, evidence_texts)
+        duration = time.monotonic() - start
+        logger.debug(
+            "Precomputed %d evidence embeddings in %.3fs",
+            len(evidence_texts),
+            duration,
+        )
+        return embeddings
+
+    def _batch_embed(self, texts: list[str]) -> list[np.ndarray]:
+        """Embed a list of texts one by one (since embedder is single-text)."""
+        return [
+            np.array(self._embedder.embed_query(t), dtype=np.float32) for t in texts
+        ]
+
     async def verify(
         self,
         claim: Claim,
         evidence_texts: list[str],
+        precomputed_embeddings: list[np.ndarray] | None = None,
     ) -> VerificationResult:
-        """Verify a claim against evidence texts using semantic similarity."""
+        """Verify a claim against evidence texts using semantic similarity.
+
+        Args:
+            claim: The claim to verify.
+            evidence_texts: The raw text of evidence chunks.
+            precomputed_embeddings: Optional cached embeddings for evidence_texts.
+        """
         if not evidence_texts:
             return VerificationResult(
                 claim=claim,
@@ -47,13 +73,29 @@ class SemanticVerifier:
                 reason="No evidence texts provided",
             )
 
+        start = time.monotonic()
         try:
             claim_text = f"{claim.subject} {claim.predicate} {claim.object_}"
-            max_sim, best_idx = await asyncio.to_thread(
-                self._compute_max_similarity, claim_text, evidence_texts
-            )
+
+            # Compute embeddings if not provided
+            if precomputed_embeddings is None:
+                max_sim, best_idx = await asyncio.to_thread(
+                    self._compute_max_similarity, claim_text, evidence_texts
+                )
+            else:
+                max_sim, best_idx = await asyncio.to_thread(
+                    self._compute_with_precomputed, claim_text, precomputed_embeddings
+                )
 
             outcome, confidence = self._classify(max_sim)
+
+            duration = time.monotonic() - start
+            logger.info(
+                "Semantic verification for claim %s took %.3fs (score=%.3f)",
+                claim.claim_id,
+                duration,
+                max_sim,
+            )
 
             return VerificationResult(
                 claim=claim,
@@ -81,14 +123,19 @@ class SemanticVerifier:
         claim_text: str,
         evidence_texts: list[str],
     ) -> tuple[float, int]:
-        """Compute max cosine similarity between claim and evidence."""
+        """Compute max cosine similarity (legacy: computes evidence embeddings)."""
+        evidence_embeddings = self._batch_embed(evidence_texts)
+        return self._compute_with_precomputed(claim_text, evidence_embeddings)
+
+    def _compute_with_precomputed(
+        self,
+        claim_text: str,
+        evidence_embeddings: list[np.ndarray],
+    ) -> tuple[float, int]:
+        """Compute max cosine similarity using precomputed evidence embeddings."""
         claim_embedding = np.array(
             self._embedder.embed_query(claim_text), dtype=np.float32
         )
-        evidence_embeddings = [
-            np.array(self._embedder.embed_query(text), dtype=np.float32)
-            for text in evidence_texts
-        ]
 
         max_sim = -1.0
         best_idx = -1
