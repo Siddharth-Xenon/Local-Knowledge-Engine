@@ -10,6 +10,22 @@
 
 ---
 
+## 📖 Table of Contents
+- [📸 Demo](#-demo)
+- [🛑 The Problem: Why Standard RAG Fails](#-the-problem-why-standard-rag-fails)
+- [💡 The Solution: Graph-Augmented Generation (GraphRAG)](#-the-solution-graph-augmented-generation-graphrag)
+- [⚙️ Architecture](#-architecture)
+  - [Reasoning Flow (LangGraph)](#-reasoning-flow-langgraph)
+- [🏗️ Data Ingestion](#-data-ingestion)
+- [🧪 Testing & Evaluation](#-testing--evaluation)
+- [📊 Observability (LangSmith)](#-observability-langsmith)
+- [🚀 Key Features](#-key-features)
+- [🛠️ Tech Stack](#-tech-stack)
+- [📐 Design Patterns & Best Practices](#-design-patterns--best-practices)
+- [🔮 Future Roadmap](#-future-roadmap)
+
+---
+
 ## 📸 Demo
 
 > *[Insert GIF: User asks "Is my flooded home covered?", System retrieves policy, finds exclusion clause, and correctly answers "No, due to unoccupancy".]*
